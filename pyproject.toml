@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "middleware"
+version = "0.1.0"
+description = ""
+authors = ["Samuel Monson <smonson at irbash dot net>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+fastapi = "^0.109.2"
+uvicorn = "^0.27.1"
+
+[tool.poetry.scripts]
+middleware = "middleware.app:main"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
