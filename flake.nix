@@ -19,7 +19,7 @@
       in
       {
         packages = {
-          middleware = mkPoetryApplication { projectDir = self; };
+          middleware = mkPoetryApplication { projectDir = ./middleware; };
           default = self.packages.${system}.middleware;
         };
 
