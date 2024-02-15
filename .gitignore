@@ -3,6 +3,7 @@
 .direnv
 # Nix result file
 /result
+*/result
 
 ## Python ##
 
