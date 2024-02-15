@@ -18,8 +18,7 @@
       in
       {
         packages = {
-          middleware3Tier = mkPoetryApplication { projectDir = ./.; };
-          default = self.packages.${system}.middleware3Tier;
+          default = mkPoetryApplication { projectDir = ./.; };
         };
       });
 }

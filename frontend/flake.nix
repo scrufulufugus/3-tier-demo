@@ -12,13 +12,12 @@
       in
       {
         packages = {
-          frontend3Tier = pkgs.mkYarnPackage {
+          default = pkgs.mkYarnPackage {
             name = "frontend3Tier";
             src = ./.;
             packageJSON = ./package.json;
             yarnLock = ./yarn.lock;
           };
-          default = self.packages.${system}.frontend3Tier;
         };
       });
 }

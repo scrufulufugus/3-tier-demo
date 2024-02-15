@@ -22,8 +22,8 @@
       in
       {
         packages = {
-          frontend3Tier = frontend.packages.${system}.frontend3Tier;
-          middleware3Tier = middleware.packages.${system}.middleware3Tier;
+          frontend3Tier = frontend.packages.${system}.default;
+          middleware3Tier = middleware.packages.${system}.default;
         };
 
         devShells.default = pkgs.mkShell {
