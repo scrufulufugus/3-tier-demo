@@ -25,12 +25,15 @@
       let
         # see https://github.com/nix-community/poetry2nix/tree/master#api for more functions and examples.
         pkgs = nixpkgs.legacyPackages.${system};
-        frontend3Tier = frontend.packages.${system}.frontend3Tier;
-        middleware3Tier = middleware.packages.${system}.middleware3Tier;
       in
       {
+        packages = {
+          frontend3Tier = frontend.packages.${system}.frontend3Tier;
+          middleware3Tier = middleware.packages.${system}.middleware3Tier;
+        };
+
         devShells.default = pkgs.mkShell {
-          inputsFrom = [ frontend3Tier middleware3Tier ];
+          inputsFrom = [ self.packages.${system}.frontend3Tier self.packages.${system}.middleware3Tier ];
           packages = with pkgs; [ poetry yarn ];
         };
       });
