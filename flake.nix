@@ -1,31 +1,26 @@
 {
-  description = "Application packaged using poetry2nix";
+  description = "A three-tier application demo";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     flake-utils.url = "github:numtide/flake-utils";
-    middleware = {
-      url = "path:middleware";
+    poetry2nix = {
+      url = "github:nix-community/poetry2nix";
       inputs.nixpkgs.follows = "nixpkgs";
-      inputs.flake-utils.follows = "flake-utils";
-    };
-    frontend = {
-      url = "path:frontend";
-      inputs.nixpkgs.follows = "nixpkgs";
-      inputs.flake-utils.follows = "flake-utils";
     };
   };
 
-  outputs = { self, nixpkgs, flake-utils, middleware, frontend, ... }:
+  outputs = { self, nixpkgs, flake-utils, poetry2nix, ... }:
     flake-utils.lib.eachDefaultSystem (system:
       let
-        # see https://github.com/nix-community/poetry2nix/tree/master#api for more functions and examples.
         pkgs = nixpkgs.legacyPackages.${system};
+        # see https://github.com/nix-community/poetry2nix/tree/master#api for more functions and examples.
+        inherit (poetry2nix.lib.mkPoetry2Nix { inherit pkgs; }) mkPoetryApplication;
       in
       {
         packages = {
-          frontend3Tier = frontend.packages.${system}.default;
-          middleware3Tier = middleware.packages.${system}.default;
+          frontend3Tier = pkgs.callPackage ./frontend { builder = pkgs.flutter.buildFlutterApplication; };
+          middleware3Tier = pkgs.callPackage ./middleware { builder = mkPoetryApplication; };
         };
 
         devShells.default = pkgs.mkShell {
