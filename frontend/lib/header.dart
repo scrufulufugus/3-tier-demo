@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'state.dart';
+import 'package:frontend/state.dart';
 
 class HeaderWrapper extends StatelessWidget {
   const HeaderWrapper({required this.body, super.key});

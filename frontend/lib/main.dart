@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'header.dart';
-import 'product.dart';
-import 'login.dart';
+import 'package:frontend/header.dart';
+import 'package:frontend/product.dart';
+import 'package:frontend/login.dart';
 
 final List<Product> _items = List<Product>.generate(
     51,
