@@ -28,7 +28,7 @@
 
         devShells.default = pkgs.mkShell {
           inputsFrom = [ self.packages.${system}.frontend3Tier self.packages.${system}.middleware3Tier ];
-          packages = with pkgs; [ poetry yarn ];
+          packages = with pkgs; [ poetry flutter ];
         };
       });
 }

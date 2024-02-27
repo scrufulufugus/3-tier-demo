@@ -1,7 +1,8 @@
 {
-  description = "Application packaged using poetry2nix";
+  description = "Flutter UI";
 
   inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     flake-utils.url = "github:numtide/flake-utils";
   };
 
@@ -12,11 +13,12 @@
       in
       {
         packages = {
-          default = pkgs.mkYarnPackage {
+          default = pkgs.flutter.buildFlutterApplication rec {
             name = "frontend3Tier";
+            pname = name;
+            version = "1.0.0+1";
             src = ./.;
-            packageJSON = ./package.json;
-            yarnLock = ./yarn.lock;
+            autoPubspecLock = ./pubspec.lock;
           };
         };
       });
