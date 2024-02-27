@@ -7,10 +7,12 @@
     middleware = {
       url = "path:middleware";
       inputs.nixpkgs.follows = "nixpkgs";
+      inputs.flake-utils.follows = "flake-utils";
     };
     frontend = {
       url = "path:frontend";
       inputs.nixpkgs.follows = "nixpkgs";
+      inputs.flake-utils.follows = "flake-utils";
     };
   };
 
