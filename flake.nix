@@ -18,9 +18,13 @@
         inherit (poetry2nix.lib.mkPoetry2Nix { inherit pkgs; }) mkPoetryApplication;
       in
       {
-        packages = {
+        packages = rec {
           frontend3Tier = pkgs.callPackage ./frontend { builder = pkgs.flutter.buildFlutterApplication; };
           middleware3Tier = pkgs.callPackage ./middleware { builder = mkPoetryApplication; };
+          default = pkgs.buildEnv {
+            name = "ThreeTierDemo";
+            paths = [ frontend3Tier middleware3Tier ];
+          };
         };
 
         devShells.default = pkgs.mkShell {
