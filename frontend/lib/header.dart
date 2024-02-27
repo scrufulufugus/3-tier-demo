@@ -7,23 +7,21 @@ class HeaderWrapper extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-        children: [
-          Header(
-            title: Text(
-              "Sumazon",
-              style: Theme.of(context) //
-                  .primaryTextTheme
-                  .titleLarge,
-            ),
-          ),
-          body,
-        ],
+    return Scaffold(
+      appBar: Header(
+        title: Text(
+          "Sumazon",
+          style: Theme.of(context) //
+          .primaryTextTheme
+          .titleLarge,
+        ),
+      ),
+      body: body,
     );
   }
 }
 
-class Header extends StatelessWidget {
+class Header extends StatelessWidget implements PreferredSizeWidget {
   const Header({required this.title, super.key});
 
   // Fields in a Widget subclass are always marked "final".
@@ -32,19 +30,15 @@ class Header extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 56, // in logical pixels
-      padding: const EdgeInsets.symmetric(horizontal: 8),
-      decoration: BoxDecoration(color: Theme.of(context).colorScheme.primary),
-      // Row is a horizontal, linear layout.
-      child: Row(
+    return AppBar(
+      backgroundColor: Theme.of(context).colorScheme.primary,
+      title: Row(
         children: [
-          // Expanded expands its child
-          // to fill the available space.
           title,
-          const Expanded(
-            child: SearchBarApp(),
-          ),
+          const Expanded(child: SearchBarApp()),
+        ],
+      ),
+      actions: [
           const IconButton(
             icon: Icon(Icons.shopping_cart),
             tooltip: 'Cart',
@@ -55,10 +49,12 @@ class Header extends StatelessWidget {
             tooltip: 'My Account',
             onPressed: null,
           ),
-        ],
-      ),
+      ],
     );
   }
+
+  @override
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 }
 
 class SearchBarApp extends StatefulWidget {
