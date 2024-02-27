@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'header.dart';
 import 'product.dart';
+import 'login.dart';
 
-final List<Product> _items = List<Product>.generate(51, (int index) => Product('Item $index', 'Description of item $index', index * 3.0, 'https://via.placeholder.com/150'));
+final List<Product> _items = List<Product>.generate(
+    51,
+    (int index) => Product('Item $index', 'Description of item $index',
+        index * 3.0, 'https://via.placeholder.com/150'));
 
 void main() {
   runApp(const MyApp());
@@ -15,7 +19,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Sumazon',
       theme: ThemeData(
         // This is the theme of your application.
         //
@@ -35,9 +39,10 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const SafeArea(
-        child: HomePage(),
-      ),
+      routes: <String, WidgetBuilder>{
+        '/': (BuildContext context) => const HomePage(),
+        '/login': (BuildContext context) => const LoginPage(),
+      }
     );
   }
 }

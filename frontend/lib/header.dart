@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'state.dart';
 
 class HeaderWrapper extends StatelessWidget {
   const HeaderWrapper({required this.body, super.key});
@@ -11,9 +12,9 @@ class HeaderWrapper extends StatelessWidget {
       appBar: Header(
         title: Text(
           "Sumazon",
-          style: Theme.of(context) //
-          .primaryTextTheme
-          .titleLarge,
+          style: Theme.of(context)
+              .primaryTextTheme
+              .titleLarge,
         ),
       ),
       body: body,
@@ -39,16 +40,42 @@ class Header extends StatelessWidget implements PreferredSizeWidget {
         ],
       ),
       actions: [
-          const IconButton(
-            icon: Icon(Icons.shopping_cart),
-            tooltip: 'Cart',
-            onPressed: null, // null disables the button
-          ),
-          const IconButton(
-            icon: Icon(Icons.account_circle),
+        PopupMenuButton(
+            icon: const Icon(Icons.account_circle),
             tooltip: 'My Account',
-            onPressed: null,
-          ),
+            itemBuilder: (BuildContext context) {
+              if (isAuthenticated) {
+                return <PopupMenuEntry>[
+                  const PopupMenuItem(
+                    child: Text('My Account'),
+                  ),
+                  PopupMenuItem(
+                    child: const Text('Sign Out'),
+                    onTap: () {
+                      logout();
+                    },
+                  ),
+                ];
+              } else {
+                return <PopupMenuEntry>[
+                  PopupMenuItem(
+                    child: const Text('Sign In'),
+                    onTap: () {
+                      // Navigate to sign in page
+                      Navigator.pushNamed(context, '/login');
+                    },
+                  ),
+                  const PopupMenuItem(
+                    child: Text('Register'),
+                  ),
+                ];
+              }
+            }),
+        const IconButton(
+          icon: Icon(Icons.shopping_cart),
+          tooltip: 'Cart',
+          onPressed: null, // null disables the button
+        ),
       ],
     );
   }
