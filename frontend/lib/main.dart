@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'header.dart';
+import 'product.dart';
+
+final List<Product> _items = List<Product>.generate(51, (int index) => Product('Item $index', 'Description of item $index', index * 3.0, 'https://via.placeholder.com/150'));
 
 void main() {
   runApp(const MyApp());
@@ -49,11 +52,7 @@ class HomePage extends StatelessWidget {
     return Material(
       // Column is a vertical, linear layout.
       child: HeaderWrapper(
-        body: const Expanded(
-          child: Center(
-            child: Text('Hello, worlds!'),
-          ),
-        ),
+        body: ProductGrid(products: _items),
       ),
     );
   }
