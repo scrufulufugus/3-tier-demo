@@ -77,3 +77,32 @@ class ProductList extends ProductGrid {
         });
   }
 }
+
+class CartList extends ProductGrid {
+  const CartList({required super.products, super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView.builder(
+        scrollDirection: Axis.vertical,
+        shrinkWrap: true, // Fixes unbloud size error
+        itemCount: products.length,
+        padding: const EdgeInsets.all(8.0),
+        itemBuilder: (BuildContext context, int index) {
+          return Row(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(products[index].title),
+              Text('\$${products[index].price}'),
+              TextButton(
+                child: const Text('DELETE'),
+                onPressed: () {
+                  Provider.of<CartModel>(context, listen: false).remove(index);
+                },
+              ),
+            ],
+          );
+        });
+  }
+}

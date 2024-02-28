@@ -73,15 +73,15 @@ class Header extends StatelessWidget implements PreferredSizeWidget {
               }
             }),
         Consumer<CartModel>(
-          builder: (context, cart, child) => Badge.count(
-            count: cart.count,
-            child: const IconButton(
-              icon: Icon(Icons.shopping_cart),
-              tooltip: 'Cart',
-              onPressed: null, // null disables the button
-            )
-          )
-        ),
+            builder: (context, cart, child) => Badge.count(
+                count: cart.length,
+                child: IconButton(
+                    icon: Icon(Icons.shopping_cart),
+                    tooltip: 'Cart',
+                    onPressed: () {
+                      Navigator.pushNamed(context, '/cart');
+                    },
+              ))),
       ],
     );
   }

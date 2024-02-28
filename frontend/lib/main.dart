@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:frontend/models/catalog.dart';
 import 'package:frontend/models/cart.dart';
 import 'package:frontend/screens/home.dart';
+import 'package:frontend/screens/cart.dart';
 import 'package:frontend/login.dart';
 
 void main() {
@@ -29,6 +30,7 @@ class MyApp extends StatelessWidget {
       routes: <String, WidgetBuilder>{
         '/': (BuildContext context) => const HomePage(),
         '/login': (BuildContext context) => const LoginPage(),
+        '/cart': (BuildContext context) => const CartPage(),
       }
     ),
   );

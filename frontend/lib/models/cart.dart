@@ -17,13 +17,18 @@ class CartModel extends ChangeNotifier implements ProductList {
     return price;
   }
 
-  int get count => _products.length;
+  int get length => _products.length;
 
   /// Adds [item] to cart. This and [removeAll] are the only ways to modify the
   /// cart from the outside.
   void add(Product item) {
     _products.add(item);
     // This call tells the widgets that are listening to this model to rebuild.
+    notifyListeners();
+  }
+
+  void remove(int index) {
+    _products.removeAt(index);
     notifyListeners();
   }
 
