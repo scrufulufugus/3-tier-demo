@@ -32,7 +32,7 @@ class Header extends StatelessWidget implements PreferredSizeWidget {
                       Navigator.pushNamed(context, '/account');
                     },
                   ),
-                  if (account.info.isAdmin)
+                  if (account.isAdmin)
                     PopupMenuItem(
                       child: const Text('Admin Panel'),
                       onTap: () {
