@@ -25,18 +25,17 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (context) => AccountModel()),
       ],
       child: MaterialApp(
-      title: 'Sumazon',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
-      routes: <String, WidgetBuilder>{
-        '/': (BuildContext context) => const HomePage(),
-        '/account': (BuildContext context) => const AccountPage(),
-        '/account/login': (BuildContext context) => const LoginPage(),
-        '/cart': (BuildContext context) => const CartPage(),
-      }
-    ),
-  );
+          title: 'Sumazon',
+          theme: ThemeData(
+            colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+            useMaterial3: true,
+          ),
+          routes: <String, WidgetBuilder>{
+            '/': (BuildContext context) => const HomePage(),
+            '/account': (BuildContext context) => const AccountPage(),
+            '/account/login': (BuildContext context) => const LoginPage(),
+            '/cart': (BuildContext context) => const CartPage(),
+          }),
+    );
   }
 }
