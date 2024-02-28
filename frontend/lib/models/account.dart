@@ -20,19 +20,20 @@ class AccountModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void logout() {
+  void logout(BuildContext context) {
+    Navigator.pushNamedAndRemoveUntil(context, '/signout', (route) => false);
     _account = null;
     notifyListeners();
   }
 
   Account get info {
     return Account(
-        _account!.id,
-        _account!.username,
-        _account!.email,
+        _account?.id ?? 0,
+        _account?.username ?? '',
+        _account?.email ?? '',
         '',
-        _account!.phone,
-        _account!.address,
+        _account?.phone ?? '',
+        _account?.address ?? '',
         false
     );
   }

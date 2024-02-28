@@ -42,7 +42,7 @@ class Header extends StatelessWidget implements PreferredSizeWidget {
                   PopupMenuItem(
                     child: const Text('Sign Out'),
                     onTap: () {
-                      account.logout();
+                      account.logout(context);
                     },
                   ),
                 ];

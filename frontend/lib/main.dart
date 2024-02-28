@@ -37,6 +37,7 @@ class MyApp extends StatelessWidget {
             '/account': (BuildContext context) => const AccountPage(),
             '/account/login': (BuildContext context) => const LoginPage(),
             '/cart': (BuildContext context) => const CartPage(),
+            '/signout': (BuildContext context) => const LoginPage(),
           }),
     );
   }
