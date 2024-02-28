@@ -4,7 +4,7 @@ import 'package:frontend/models/catalog.dart';
 import 'package:frontend/models/cart.dart';
 import 'package:frontend/screens/home.dart';
 import 'package:frontend/screens/cart.dart';
-import 'package:frontend/login.dart';
+import 'package:frontend/screens/login.dart';
 
 void main() {
   runApp(const MyApp());
