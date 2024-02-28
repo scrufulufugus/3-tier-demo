@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class AccountModel extends ChangeNotifier {
   AccountModel();
@@ -21,7 +22,7 @@ class AccountModel extends ChangeNotifier {
   }
 
   void logout(BuildContext context) {
-    Navigator.pushNamedAndRemoveUntil(context, '/signout', (route) => false);
+    context.go('/signout');
     _account = null;
     notifyListeners();
   }

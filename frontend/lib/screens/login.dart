@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:go_router/go_router.dart';
 import 'package:frontend/models/account.dart';
 
 class LoginPage extends StatefulWidget {
@@ -72,14 +73,17 @@ class _LoginState extends State<LoginPage> {
                         if (_formKey.currentState!.validate()) {
                           // Skip logging in if we already are
                           if (account.isAuthenticated) {
-                            Navigator.pushNamed(context, '/');
+                            context.go('/');
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Already Authenticated')),
+                            );
                             return;
                           }
                           // Submit to backend
                           account.login(
                               usernameController.text, passwordController.text);
                           // Navigate the user to the Home page
-                          Navigator.pushNamed(context, '/');
+                          context.go('/');
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(content: Text('Please fill input')),

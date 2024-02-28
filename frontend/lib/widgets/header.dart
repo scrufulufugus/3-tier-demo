@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:go_router/go_router.dart';
 import 'package:frontend/models/cart.dart';
 import 'package:frontend/models/account.dart';
 
@@ -15,7 +16,7 @@ class Header extends StatelessWidget implements PreferredSizeWidget {
           style: Theme.of(context).primaryTextTheme.titleLarge
         ),
         onPressed: () {
-          Navigator.pushNamed(context, '/');
+          context.go('/');
         },
       ),
       actions: [
@@ -29,14 +30,14 @@ class Header extends StatelessWidget implements PreferredSizeWidget {
                   PopupMenuItem(
                     child: const Text('My Account'),
                     onTap: () {
-                      Navigator.pushNamed(context, '/account');
+                      context.go('/account');
                     },
                   ),
                   if (account.isAdmin)
                     PopupMenuItem(
                       child: const Text('Admin Panel'),
                       onTap: () {
-                        Navigator.pushNamed(context, '/admin');
+                        context.go('/admin');
                       },
                     ),
                   PopupMenuItem(
@@ -52,7 +53,7 @@ class Header extends StatelessWidget implements PreferredSizeWidget {
                     child: const Text('Sign In'),
                     onTap: () {
                       // Navigate to sign in page
-                      Navigator.pushNamed(context, '/account/login');
+                      context.go('/account/login');
                     },
                   ),
                   const PopupMenuItem(
@@ -70,7 +71,7 @@ class Header extends StatelessWidget implements PreferredSizeWidget {
                     icon: const Icon(Icons.shopping_cart),
                     tooltip: 'Cart',
                     onPressed: () {
-                      Navigator.pushNamed(context, '/cart');
+                      context.go('/cart');
                     },
               ))),
       ],
