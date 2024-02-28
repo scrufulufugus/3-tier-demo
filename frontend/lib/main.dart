@@ -7,6 +7,7 @@ import 'package:frontend/screens/home.dart';
 import 'package:frontend/screens/cart.dart';
 import 'package:frontend/screens/login.dart';
 import 'package:frontend/screens/account.dart';
+import 'package:frontend/screens/admin.dart';
 
 void main() {
   runApp(const MyApp());
@@ -32,6 +33,7 @@ class MyApp extends StatelessWidget {
           ),
           routes: <String, WidgetBuilder>{
             '/': (BuildContext context) => const HomePage(),
+            '/admin': (BuildContext context) => const AdminPage(),
             '/account': (BuildContext context) => const AccountPage(),
             '/account/login': (BuildContext context) => const LoginPage(),
             '/cart': (BuildContext context) => const CartPage(),
