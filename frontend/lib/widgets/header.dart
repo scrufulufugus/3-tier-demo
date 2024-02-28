@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:frontend/models/catalog.dart';
+import 'package:frontend/models/cart.dart';
 import 'package:frontend/state.dart';
 
 class HeaderWrapper extends StatelessWidget {
@@ -12,9 +15,7 @@ class HeaderWrapper extends StatelessWidget {
       appBar: Header(
         title: Text(
           "Sumazon",
-          style: Theme.of(context)
-              .primaryTextTheme
-              .titleLarge,
+          style: Theme.of(context).primaryTextTheme.titleLarge,
         ),
       ),
       body: body,
@@ -71,10 +72,15 @@ class Header extends StatelessWidget implements PreferredSizeWidget {
                 ];
               }
             }),
-        const IconButton(
-          icon: Icon(Icons.shopping_cart),
-          tooltip: 'Cart',
-          onPressed: null, // null disables the button
+        Consumer<CartModel>(
+          builder: (context, cart, child) => Badge.count(
+            count: cart.count,
+            child: const IconButton(
+              icon: Icon(Icons.shopping_cart),
+              tooltip: 'Cart',
+              onPressed: null, // null disables the button
+            )
+          )
         ),
       ],
     );
@@ -109,6 +115,9 @@ class _SearchBarAppState extends State<SearchBarApp> {
           },
           onChanged: (_) {
             controller.openView();
+          },
+          onSubmitted: (entry) {
+            Provider.of<CatalogModel>(context, listen: false).filter(entry);
           },
           leading: const Icon(Icons.search),
         );

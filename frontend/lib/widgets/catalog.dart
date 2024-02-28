@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:frontend/models/cart.dart';
+import 'package:frontend/models/catalog.dart';
 
 // TODO: Make ProductDisplay an interface that ProductGrid and ProductList implement
 
@@ -35,7 +38,9 @@ class ProductGrid extends StatelessWidget {
                   children: <Widget>[
                     TextButton(
                       child: const Text('ADD TO CART'),
-                      onPressed: () {/* ... */},
+                      onPressed: () {
+                        Provider.of<CartModel>(context, listen: false).add(products[index]);
+                      },
                     ),
                   ],
                 ),
@@ -71,14 +76,4 @@ class ProductList extends ProductGrid {
           );
         });
   }
-}
-
-class Product {
-  Product(this.title, this.description, this.price, this.imageUrl,
-      {this.stock = 0});
-  final String title;
-  final String description;
-  final double price;
-  final int stock;
-  final String imageUrl;
 }
