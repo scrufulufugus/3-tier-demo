@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:frontend/models/catalog.dart';
 import 'package:frontend/models/cart.dart';
-import 'package:frontend/state.dart';
+import 'package:frontend/models/account.dart';
 
 class HeaderWrapper extends StatelessWidget {
   const HeaderWrapper({required this.body, super.key});
@@ -41,19 +41,30 @@ class Header extends StatelessWidget implements PreferredSizeWidget {
         ],
       ),
       actions: [
-        PopupMenuButton(
+        Consumer<AccountModel>(
+            builder: (context, account, child) => PopupMenuButton(
             icon: const Icon(Icons.account_circle),
             tooltip: 'My Account',
             itemBuilder: (BuildContext context) {
-              if (isAuthenticated) {
+              if (account.isAuthenticated) {
                 return <PopupMenuEntry>[
-                  const PopupMenuItem(
-                    child: Text('My Account'),
+                  PopupMenuItem(
+                    child: const Text('My Account'),
+                    onTap: () {
+                      Navigator.pushNamed(context, '/account');
+                    },
                   ),
+                  if (account.info.isAdmin)
+                    PopupMenuItem(
+                      child: const Text('Admin Panel'),
+                      onTap: () {
+                        Navigator.pushNamed(context, '/admin');
+                      },
+                    ),
                   PopupMenuItem(
                     child: const Text('Sign Out'),
                     onTap: () {
-                      logout();
+                      account.logout();
                     },
                   ),
                 ];
@@ -63,20 +74,22 @@ class Header extends StatelessWidget implements PreferredSizeWidget {
                     child: const Text('Sign In'),
                     onTap: () {
                       // Navigate to sign in page
-                      Navigator.pushNamed(context, '/login');
+                      Navigator.pushNamed(context, '/account/login');
                     },
                   ),
                   const PopupMenuItem(
+                    enabled: false,
                     child: Text('Register'),
                   ),
                 ];
               }
             }),
+          ),
         Consumer<CartModel>(
             builder: (context, cart, child) => Badge.count(
                 count: cart.length,
                 child: IconButton(
-                    icon: Icon(Icons.shopping_cart),
+                    icon: const Icon(Icons.shopping_cart),
                     tooltip: 'Cart',
                     onPressed: () {
                       Navigator.pushNamed(context, '/cart');

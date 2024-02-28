@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:frontend/models/catalog.dart';
 import 'package:frontend/models/cart.dart';
+import 'package:frontend/models/account.dart';
 import 'package:frontend/screens/home.dart';
 import 'package:frontend/screens/cart.dart';
 import 'package:frontend/screens/login.dart';
+import 'package:frontend/screens/account.dart';
 
 void main() {
   runApp(const MyApp());
@@ -20,6 +22,7 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (context) => CatalogModel()),
         ChangeNotifierProvider(create: (context) => CartModel()),
+        ChangeNotifierProvider(create: (context) => AccountModel()),
       ],
       child: MaterialApp(
       title: 'Sumazon',
@@ -29,7 +32,8 @@ class MyApp extends StatelessWidget {
       ),
       routes: <String, WidgetBuilder>{
         '/': (BuildContext context) => const HomePage(),
-        '/login': (BuildContext context) => const LoginPage(),
+        '/account': (BuildContext context) => const AccountPage(),
+        '/account/login': (BuildContext context) => const LoginPage(),
         '/cart': (BuildContext context) => const CartPage(),
       }
     ),
