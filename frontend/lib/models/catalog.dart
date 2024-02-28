@@ -4,7 +4,7 @@ import 'package:frontend/models/product.dart';
 class CatalogModel extends ChangeNotifier implements ProductList {
   CatalogModel() {
     // TODO: Lazy load from server
-    initCatalog(List<Product>.generate(
+    _products.addAll(List<Product>.generate(
         51,
         (int index) => Product(
             index,
@@ -33,6 +33,18 @@ class CatalogModel extends ChangeNotifier implements ProductList {
     }
   }
 
+  @override
+  void add(Product item) {
+    _products.add(item);
+    notifyListeners();
+  }
+
+  @override
+  void remove(int index) {
+    _products.removeAt(index);
+    notifyListeners();
+  }
+
   // Apply a search query to the catalog
   void filter(String query) {
     // FIXME: Remove print
@@ -45,12 +57,6 @@ class CatalogModel extends ChangeNotifier implements ProductList {
   void clearFilter() {
     _searchQuery = null;
     notifyListeners();
-  }
-
-  // FIXME: Remove this
-  void initCatalog(List<Product> products) {
-    _products.clear();
-    _products.addAll(products);
   }
 
   // Update the catalog from the server

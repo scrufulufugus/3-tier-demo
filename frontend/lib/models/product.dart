@@ -1,5 +1,9 @@
 abstract class ProductList {
   List<Product> get products;
+
+  void add(Product item);
+
+  void remove(int index);
 }
 
 class Product {

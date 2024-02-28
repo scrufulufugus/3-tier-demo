@@ -21,12 +21,14 @@ class CartModel extends ChangeNotifier implements ProductList {
 
   /// Adds [item] to cart. This and [removeAll] are the only ways to modify the
   /// cart from the outside.
+  @override
   void add(Product item) {
     _products.add(item);
     // This call tells the widgets that are listening to this model to rebuild.
     notifyListeners();
   }
 
+  @override
   void remove(int index) {
     _products.removeAt(index);
     notifyListeners();
