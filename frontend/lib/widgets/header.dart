@@ -3,37 +3,21 @@ import 'package:provider/provider.dart';
 import 'package:frontend/models/cart.dart';
 import 'package:frontend/models/account.dart';
 
-class HeaderWrapper extends StatelessWidget {
-  const HeaderWrapper({required this.body, super.key});
-
-  final Widget body;
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: Header(
-        title: Text(
-          "Sumazon",
-          style: Theme.of(context).primaryTextTheme.titleLarge,
-        ),
-      ),
-      body: body,
-    );
-  }
-}
-
 class Header extends StatelessWidget implements PreferredSizeWidget {
-  const Header({required this.title, super.key});
-
-  // Fields in a Widget subclass are always marked "final".
-
-  final Widget title;
+  const Header({super.key});
 
   @override
   Widget build(BuildContext context) {
     return AppBar(
       backgroundColor: Theme.of(context).colorScheme.primary,
-      title: title,
+      title: TextButton(
+        child: Text("Sumazon",
+          style: Theme.of(context).primaryTextTheme.titleLarge
+        ),
+        onPressed: () {
+          Navigator.pushNamed(context, '/');
+        },
+      ),
       actions: [
         Consumer<AccountModel>(
             builder: (context, account, child) => PopupMenuButton(

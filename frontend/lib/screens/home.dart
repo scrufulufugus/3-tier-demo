@@ -12,7 +12,8 @@ class HomePage extends StatelessWidget {
     // Material is a conceptual piece
     // of paper on which the UI appears.
     return Material(
-      child: HeaderWrapper(
+      child: Scaffold(
+        appBar: const Header(),
         body: Consumer<CatalogModel>(
             builder: (context, catalog, child) =>
                 ProductGrid(products: catalog.products)),

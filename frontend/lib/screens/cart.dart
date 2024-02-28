@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:frontend/models/cart.dart';
 import 'package:frontend/widgets/catalog.dart';
+import 'package:frontend/widgets/header.dart';
 
 class CartPage extends StatelessWidget {
   const CartPage({super.key});
@@ -12,13 +13,7 @@ class CartPage extends StatelessWidget {
     // of paper on which the UI appears.
     return Material(
       child: Scaffold(
-        appBar: AppBar(
-          backgroundColor: Theme.of(context).colorScheme.primary,
-          title: Text(
-            "Cart",
-            style: Theme.of(context).primaryTextTheme.titleLarge,
-          ),
-        ),
+        appBar: const Header(),
         body: Consumer<CartModel>(
           builder: (context, cart, child) => Column(
             mainAxisSize: MainAxisSize.min,
