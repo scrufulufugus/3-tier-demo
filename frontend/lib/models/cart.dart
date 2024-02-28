@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/models/catalog.dart';
+import 'package:frontend/models/product.dart';
 
-class CartModel extends ChangeNotifier {
+class CartModel extends ChangeNotifier implements ProductList {
   /// Internal, private state of the cart.
   final List<Product> _products = [];
+
+  @override
+  List<Product> get products => List.unmodifiable(_products);
 
   /// The current total price of all items.
   double get price {

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/models/product.dart';
 
-class CatalogModel extends ChangeNotifier {
+class CatalogModel extends ChangeNotifier implements ProductList {
   CatalogModel() {
     // TODO: Lazy load from server
     initCatalog(List<Product>.generate(
@@ -19,6 +20,7 @@ class CatalogModel extends ChangeNotifier {
   String? _searchQuery;
 
   /// Get a list of items in the catalog filtered by the search query.
+  @override
   List<Product> get products {
     if (_searchQuery == null || _searchQuery!.isEmpty) {
       return List.unmodifiable(_products);
@@ -57,15 +59,4 @@ class CatalogModel extends ChangeNotifier {
     _products.addAll(products);
     notifyListeners();
   }
-}
-
-class Product {
-  Product(this.id, this.title, this.description, this.price, this.imageUrl,
-      {this.stock = 0});
-  final int id;
-  final String title;
-  final String description;
-  final double price;
-  final int stock;
-  final String imageUrl;
 }
