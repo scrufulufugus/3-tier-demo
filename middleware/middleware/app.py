@@ -1,4 +1,3 @@
-import uvicorn
 from typing import Annotated
 
 from fastapi import FastAPI, HTTPException, Depends
@@ -119,9 +118,3 @@ async def login(username: str, password: str):
 # POST /users/{id} (optional)
 # DELETE /users/{id} (optional)
 # PUT /buy
-
-def main():
-    uvicorn.run("middleware.app:app", host="0.0.0.0", port=8000, reload=True)
-
-if __name__ == '__main__':
-    main()
