@@ -28,18 +28,48 @@ class User(BaseModel):
 
 # TODO: Replace with database
 products = [
-    Product(id=1, title="Phone", description="New phone", price=1000, stock=10, image="phone.jpg"),
-    Product(id=2, title="Laptop", description="New laptop", price=2000, stock=20, image="laptop.jpg"),
+    {
+        "id": 1,
+        "title": "Phone",
+        "description": "New phone",
+        "price": 1000,
+        "stock": 10,
+        "image": "phone.jpg"
+    },
+    {
+        "id": 2,
+        "title": "Laptop",
+        "description": "New laptop",
+        "price": 2000,
+        "stock": 20,
+        "image": "laptop.jpg"
+    }
 ]
 
 users = [
-    User(id=1, username="tester", email="test@example.com", password="password123", phone=1234567890, address="123, Test Street", isAdmin=True),
-    User(id=2, username="testee", email="testee@example.com", password="password321", phone=1234567890, address="123, Testee Street", isAdmin=False),
+    {
+        "id": 1,
+        "username": "tester",
+        "email": "test@example.com",
+        "password": "password123",
+        "phone": 1234567890,
+        "address": "123, Test Street",
+        "isAdmin": True
+    },
+    {
+        "id": 2,
+        "username": "testee",
+        "email": "testee@example.com",
+        "password": "password321",
+        "phone": 1234567890,
+        "address": "123, Testee Street",
+        "isAdmin": False
+    }
 ]
 
 def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
     for user in users:
-        if user.username == token:
+        if user['username'] == token:
             return user
     raise HTTPException(status_code=401, detail="Invalid Token")
 
@@ -66,7 +96,7 @@ async def create_product(product: Product):
 @app.get("/products/{id}")
 async def get_product(id: int):
     for product in products:
-        if product.id == id:
+        if product["id"] == id:
             return product
     raise HTTPException(status_code=404, detail="Product not found")
 
@@ -74,12 +104,12 @@ async def get_product(id: int):
 @app.post("/products/{id}")
 async def update_product(id: int, product: Product):
     for p in products:
-        if p.id == id:
-            p.title = product.title
-            p.description = product.description
-            p.price = product.price
-            p.stock = product.stock
-            p.image = product.image
+        if p["id"] == id:
+            p["title"] = product.title
+            p["description"] = product.description
+            p["price"] = product.price
+            p["stock"] = product.stock
+            p["image"] = product.image
             return p
     raise HTTPException(status_code=404, detail="Product not found")
 
@@ -87,7 +117,7 @@ async def update_product(id: int, product: Product):
 @app.delete("/products/{id}")
 async def delete_product(id: int):
     for index, product in enumerate(products):
-        if product.id == id:
+        if product["id"] == id:
             products.pop(index)
             return {"Data": "Deleted"}
     raise HTTPException(status_code=404, detail="Product not found")
@@ -96,7 +126,7 @@ async def delete_product(id: int):
 @app.post("/login")
 async def login(username: str, password: str):
     for user in users:
-        if user.username == username and user.password == password:
+        if user['username'] == username and user['password'] == password:
             return user
     raise HTTPException(status_code=401, detail="Invalid Credentials")
 
