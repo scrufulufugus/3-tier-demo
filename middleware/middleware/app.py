@@ -1,7 +1,7 @@
 from typing import Annotated
 
 from fastapi import FastAPI, HTTPException, Depends
-from fastapi.security import OAuth2PasswordBearer
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from pydantic import BaseModel
 
 app = FastAPI()
@@ -67,19 +67,40 @@ users = [
     }
 ]
 
-def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
+def get_user(username):
     for user in users:
-        if user['username'] == token:
+        if user['username'] == username:
             return user
+    return None
+
+def get_current_user(token: Annotated[str|None, Depends(oauth2_scheme)]) -> User|None:
+    if token == None: # Anonymous authentication
+        return None
+    user_dict = get_user(token)
+    if user_dict != None:
+        return User(**user_dict)
     raise HTTPException(status_code=401, detail="Invalid Token")
 
 
 @app.get("/")
-async def root(User: Annotated[User, Depends(get_current_user)]):
-    if user != None:
-        return {"message": f"Hello {user.username}"}
-    else:
+async def root(user: Annotated[User|None, Depends(get_current_user)]):
+    if not user:
         return {"message": "Hello World"}
+    return {"message": f"Hello {user.username}"}
+
+
+# Return a token for a given (user, pass)
+@app.post("/token")
+async def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]):
+    user_dict = get_user(form_data.username)
+    if not user_dict:
+        raise HTTPException(status_code=400, detail="Invalid credentials")
+    user = User(**user_dict)
+    if not form_data.password == user.password:
+        raise HTTPException(status_code=400, detail="Invalid credentials")
+
+    return {"access_token": user.username, "token_type": "bearer"}
+
 
 # GET /products
 @app.get("/products")
