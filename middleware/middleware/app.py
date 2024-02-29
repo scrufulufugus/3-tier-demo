@@ -9,13 +9,18 @@ app = FastAPI()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token", auto_error=False)
 
 # Data Models
-class Product(BaseModel):
-    id: int
+class ProductBase(BaseModel):
     title: str
     description: str
     price: float
     stock: int | None = None
     image: str
+
+class Product(ProductBase):
+    id: int
+
+class ProductList(BaseModel):
+    products: list[Product]
 
 class User(BaseModel):
     id: int
@@ -81,6 +86,11 @@ def get_current_user(token: Annotated[str|None, Depends(oauth2_scheme)]) -> User
         return User(**user_dict)
     raise HTTPException(status_code=401, detail="Invalid Token")
 
+def append_product(product: ProductBase):
+    product_dict = dict(product)
+    product_dict["id"] = len(products)+1
+    products.append(product_dict)
+    return Product(**product_dict)
 
 @app.get("/")
 async def root(user: Annotated[User|None, Depends(get_current_user)]):
@@ -104,17 +114,27 @@ async def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]):
 
 # GET /products
 @app.get("/products")
-async def get_products():
-    return products
+async def get_products(user: Annotated[User|None, Depends(get_current_user)]):
+    product_list = ProductList(products=[Product(**x) for x in products])
+    if user and user.isAdmin:
+        return product_list
+
+    # Hide stock if not authenticated
+    for p in product_list.products:
+        p.stock = 0
+    return product_list
 
 # POST /products
-@app.post("/products")
-async def create_product(product: Product):
-    products.append(product.dict())
-    return products[-1]
+@app.post("/product")
+async def create_product(user: Annotated[User|None, Depends(get_current_user)], product: ProductBase):
+    if not user:
+        raise HTTPException(status_code=400, detail="Invalid credentials")
+    if not user.isAdmin:
+        raise HTTPException(status_code=400, detail="Invalid credentials")
+    return append_product(product)
 
 # GET /products/{id}
-@app.get("/products/{id}")
+@app.get("/product/{id}")
 async def get_product(id: int):
     for product in products:
         if product["id"] == id:
@@ -122,7 +142,7 @@ async def get_product(id: int):
     raise HTTPException(status_code=404, detail="Product not found")
 
 # POST /products/{id}
-@app.post("/products/{id}")
+@app.post("/product/{id}")
 async def update_product(id: int, product: Product):
     for p in products:
         if p["id"] == id:
@@ -135,7 +155,7 @@ async def update_product(id: int, product: Product):
     raise HTTPException(status_code=404, detail="Product not found")
 
 # DELETE /products/{id}
-@app.delete("/products/{id}")
+@app.delete("/product/{id}")
 async def delete_product(id: int):
     for index, product in enumerate(products):
         if product["id"] == id:
@@ -143,15 +163,7 @@ async def delete_product(id: int):
             return {"Data": "Deleted"}
     raise HTTPException(status_code=404, detail="Product not found")
 
-# POST /login
-@app.post("/login")
-async def login(username: str, password: str):
-    for user in users:
-        if user['username'] == username and user['password'] == password:
-            return user
-    raise HTTPException(status_code=401, detail="Invalid Credentials")
-
-# GET /users/{id} (optional)
-# POST /users/{id} (optional)
-# DELETE /users/{id} (optional)
+# GET /user/{id} (optional)
+# POST /user/{id} (optional)
+# DELETE /user/{id} (optional)
 # PUT /buy
