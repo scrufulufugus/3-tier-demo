@@ -28,22 +28,8 @@ class User(BaseModel):
 
 # TODO: Replace with database
 products = [
-    {
-        "id": 1,
-        "title": "Phone",
-        "description": "New phone",
-        "price": 1000,
-        "stock": 10,
-        "image": "phone.jpg"
-    },
-    {
-        "id": 2,
-        "title": "Laptop",
-        "description": "New laptop",
-        "price": 2000,
-        "stock": 20,
-        "image": "laptop.jpg"
-    }
+    Product(id=1, title="Phone", description="New phone", price=1000, stock=10, image="phone.jpg"),
+    Product(id=2, title="Laptop", description="New laptop", price=2000, stock=20, image="laptop.jpg"),
 ]
 
 users = [
@@ -80,7 +66,7 @@ async def create_product(product: Product):
 @app.get("/products/{id}")
 async def get_product(id: int):
     for product in products:
-        if product["id"] == id:
+        if product.id == id:
             return product
     raise HTTPException(status_code=404, detail="Product not found")
 
@@ -88,12 +74,12 @@ async def get_product(id: int):
 @app.post("/products/{id}")
 async def update_product(id: int, product: Product):
     for p in products:
-        if p["id"] == id:
-            p["title"] = product.title
-            p["description"] = product.description
-            p["price"] = product.price
-            p["stock"] = product.stock
-            p["image"] = product.image
+        if p.id == id:
+            p.title = product.title
+            p.description = product.description
+            p.price = product.price
+            p.stock = product.stock
+            p.image = product.image
             return p
     raise HTTPException(status_code=404, detail="Product not found")
 
@@ -101,7 +87,7 @@ async def update_product(id: int, product: Product):
 @app.delete("/products/{id}")
 async def delete_product(id: int):
     for index, product in enumerate(products):
-        if product["id"] == id:
+        if product.id == id:
             products.pop(index)
             return {"Data": "Deleted"}
     raise HTTPException(status_code=404, detail="Product not found")
