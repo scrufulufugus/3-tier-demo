@@ -29,7 +29,7 @@
 
         devShells.default = pkgs.mkShell {
           inputsFrom = [ self.packages.${system}.frontend3Tier self.packages.${system}.middleware3Tier ];
-          packages = with pkgs; [ poetry flutter ];
+          packages = with pkgs; [ poetry pyright flutter ];
           CHROME_EXECUTABLE = pkgs.chromedriver + "/bin/chromedriver";
         };
       });
