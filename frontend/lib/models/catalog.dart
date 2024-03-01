@@ -7,11 +7,11 @@ class CatalogModel extends ChangeNotifier implements ProductList {
     _products.addAll(List<Product>.generate(
         51,
         (int index) => Product(
-            index,
-            'Item $index',
-            'Description of item $index',
-            index * 3.0,
-            'https://via.placeholder.com/150')));
+            id: index,
+            title: 'Item $index',
+            description: 'Description of item $index',
+            price: index * 3.0,
+            imageUrl: 'https://via.placeholder.com/150')));
   }
 
   /// Internal, private state of the cart.
