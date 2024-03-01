@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:frontend/models/product.dart';
-import 'package:frontend/models/catalog.dart';
 import 'package:frontend/models/cart.dart';
 
 // TODO: Make ProductDisplay an interface that ProductGrid and ProductList implement
@@ -72,7 +71,8 @@ class ProductList extends ProductGrid {
               TextButton(
                 child: const Text('DELETE'),
                 onPressed: () {
-                  Provider.of<CatalogModel>(context, listen: false).remove(index);
+                  // FIXME: Dosn't update the UI
+                  products.removeAt(index);
                 },
               ),
             ],

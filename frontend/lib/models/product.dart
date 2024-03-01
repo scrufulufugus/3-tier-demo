@@ -1,14 +1,6 @@
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-abstract class ProductList {
-  List<Product> get products;
-
-  void add(Product item);
-
-  void remove(int index);
-}
-
 class Product {
   final int id;
   final String title;

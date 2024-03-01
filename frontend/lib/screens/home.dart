@@ -1,11 +1,23 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/models/catalog.dart';
+import 'package:frontend/models/product.dart';
 import 'package:frontend/widgets/header.dart';
 import 'package:frontend/widgets/catalog.dart';
-import 'package:provider/provider.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  late Future<List<Product>> futureProducts;
+
+  @override
+  void initState() {
+    super.initState();
+    futureProducts = fetchProducts();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -14,9 +26,19 @@ class HomePage extends StatelessWidget {
     return Material(
       child: Scaffold(
         appBar: const Header(),
-        body: Consumer<CatalogModel>(
-            builder: (context, catalog, child) =>
-                ProductGrid(products: catalog.products)),
+        body: FutureBuilder<List<Product>>(
+          future: futureProducts,
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              return ProductGrid(products: snapshot.data!);
+            } else if (snapshot.hasError) {
+              return Text('${snapshot.error}');
+            }
+
+            // By default, show a loading spinner.
+            return const CircularProgressIndicator();
+          },
+        ),
       ),
     );
   }

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
-import 'package:frontend/models/catalog.dart';
 import 'package:frontend/models/cart.dart';
 import 'package:frontend/models/account.dart';
 import 'package:frontend/screens/home.dart';
@@ -51,7 +50,6 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (context) => CatalogModel()),
         ChangeNotifierProvider(create: (context) => CartModel()),
         ChangeNotifierProvider(create: (context) => AccountModel()),
       ],
