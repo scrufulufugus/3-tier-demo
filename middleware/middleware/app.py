@@ -4,6 +4,8 @@ from fastapi import FastAPI, HTTPException, Depends
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from pydantic import BaseModel
 
+import random
+
 app = FastAPI()
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token", auto_error=False)
@@ -29,24 +31,19 @@ class User(BaseModel):
     isAdmin: bool | None = None
 
 # TODO: Replace with database
-products = [
-    {
-        "id": 1,
-        "title": "Phone",
-        "description": "New phone",
-        "price": 1000,
-        "stock": 10,
-        "image": "phone.jpg"
-    },
-    {
-        "id": 2,
-        "title": "Laptop",
-        "description": "New laptop",
-        "price": 2000,
-        "stock": 20,
-        "image": "laptop.jpg"
-    }
-]
+
+def product_generator(n):
+    for index in range(1, n+1):
+        yield {
+            "id": index,
+            "title": f"Item {index}",
+            "description": f"Description of item {index}",
+            "price": round(index * random.random() * 10,2),
+            "stock": index * random.randrange(1,100),
+            "image": 'https://via.placeholder.com/150'
+        }
+
+products = list(product_generator(40))
 
 users = [
     {
