@@ -19,9 +19,6 @@ class ProductBase(BaseModel):
 class Product(ProductBase):
     id: int
 
-class ProductList(BaseModel):
-    products: list[Product]
-
 class User(BaseModel):
     id: int
     username: str
@@ -115,46 +112,46 @@ async def root(user: Annotated[User|None, Depends(get_current_user)]):
 async def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]):
     user_dict = get_user(form_data.username)
     if not user_dict:
-        raise HTTPException(status_code=400, detail="Invalid credentials")
+        raise HTTPException(status_code=401, detail="Invalid credentials")
     user = User(**user_dict)
     if not form_data.password == user.password:
-        raise HTTPException(status_code=400, detail="Invalid credentials")
+        raise HTTPException(status_code=401, detail="Invalid credentials")
 
     return {"access_token": f"{user.username}:{user.password}", "token_type": "bearer"}
 
 
 # GET /products
 @app.get("/products")
-async def get_products(user: Annotated[User|None, Depends(get_current_user)]):
-    product_list = ProductList(products=[Product(**x) for x in products])
+async def get_products(user: Annotated[User|None, Depends(get_current_user)]) -> list[Product]:
+    product_list = [Product(**x) for x in products]
     if user and user.isAdmin:
         return product_list
 
     # Hide stock if not authenticated
-    for p in product_list.products:
+    for p in product_list:
         p.stock = 0
     return product_list
 
 # POST /products
 @app.post("/product")
-async def create_product(user: Annotated[User|None, Depends(get_current_user)], product: ProductBase):
+async def create_product(user: Annotated[User|None, Depends(get_current_user)], product: ProductBase) -> Product:
     if not user:
-        raise HTTPException(status_code=400, detail="Invalid credentials")
+        raise HTTPException(status_code=401, detail="Invalid credentials")
     if not user.isAdmin:
-        raise HTTPException(status_code=400, detail="Invalid credentials")
+        raise HTTPException(status_code=403, detail="Invalid credentials")
     return append_product(product)
 
 # GET /products/{id}
 @app.get("/product/{id}")
-async def get_product(id: int):
+async def get_product(id: int) -> Product:
     for product in products:
         if product["id"] == id:
-            return product
+            return Product(**product)
     raise HTTPException(status_code=404, detail="Product not found")
 
 # POST /products/{id}
 @app.post("/product/{id}")
-async def update_product(id: int, product: Product):
+async def update_product(id: int, product: Product) -> Product:
     for p in products:
         if p["id"] == id:
             p["title"] = product.title
@@ -162,7 +159,7 @@ async def update_product(id: int, product: Product):
             p["price"] = product.price
             p["stock"] = product.stock
             p["image"] = product.image
-            return p
+            return Product(**p)
     raise HTTPException(status_code=404, detail="Product not found")
 
 # DELETE /products/{id}
