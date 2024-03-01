@@ -78,12 +78,23 @@ def get_user(username):
             return user
     return None
 
+
+def token_to_user(token: str) -> User|None:
+    split = token.split(':')
+    if len(split) != 2:
+      return None
+    user_dict = get_user(split[0])
+    if user_dict is not None and user_dict["password"] == split[1]:
+        return User(**user_dict)
+    return None
+
+
 def get_current_user(token: Annotated[str|None, Depends(oauth2_scheme)]) -> User|None:
     if token == None: # Anonymous authentication
         return None
-    user_dict = get_user(token)
-    if user_dict != None:
-        return User(**user_dict)
+    user = token_to_user(token)
+    if user != None:
+        return user
     raise HTTPException(status_code=401, detail="Invalid Token")
 
 def append_product(product: ProductBase):
@@ -109,7 +120,7 @@ async def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]):
     if not form_data.password == user.password:
         raise HTTPException(status_code=400, detail="Invalid credentials")
 
-    return {"access_token": user.username, "token_type": "bearer"}
+    return {"access_token": f"{user.username}:{user.password}", "token_type": "bearer"}
 
 
 # GET /products
