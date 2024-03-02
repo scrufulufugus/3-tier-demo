@@ -54,6 +54,24 @@ def product_generator(n):
 
 products = list(product_generator(40))
 
+products.append({
+    "id": 41,
+    "title": "None",
+    "description": "Out of stock item",
+    "price": 100.00,
+    "stock": 0,
+    "image": 'https://via.placeholder.com/150'
+})
+
+products.append({
+    "id": 42,
+    "title": "One",
+    "description": "One in stock item",
+    "price": 100.00,
+    "stock": 1,
+    "image": 'https://via.placeholder.com/150'
+})
+
 users = [
     {
         "id": 1,
@@ -201,6 +219,7 @@ async def purchase(user: Annotated[User|None, Depends(get_current_user)], produc
     if not product_ids:
         raise HTTPException(status_code=400, detail="No products in cart")
 
+    # FIXME: Track stock changes
     total = 0
     for id in product_ids:
         product = get_product_by_id(id)
