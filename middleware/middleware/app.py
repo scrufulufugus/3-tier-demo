@@ -3,6 +3,7 @@ from typing import Annotated
 from fastapi import FastAPI, HTTPException, Depends
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from pydantic import BaseModel
+from pydantic.json_schema import SkipJsonSchema
 
 # TODO: Temp Dependencies
 import random
@@ -23,14 +24,25 @@ class ProductBase(BaseModel):
 class Product(ProductBase):
     id: int
 
-class User(BaseModel):
+class BaseUser(BaseModel):
     id: int
     username: str
     email: str
-    password: str
     phone: int
     address: str
-    isAdmin: bool | None = None
+    isAdmin: bool
+
+class User(BaseUser):
+    password: str
+
+class OptionalUser(User):
+    id: SkipJsonSchema[None] = None
+    username: SkipJsonSchema[None] = None
+    email: str | None = None
+    password: str | None = None
+    phone: int | None = None
+    address: str | None = None
+    isAdmin: SkipJsonSchema[None] = None
 
 class PurchaseRecord(BaseModel):
     id: int
@@ -208,8 +220,38 @@ async def delete_product(id: int):
     raise HTTPException(status_code=404, detail="Product not found")
 
 # GET /user/{id} (optional)
+
+# PATCH /user/{id}
+@app.patch("/user/{id}")
+async def update_user(id: int, user: Annotated[User|None, Depends(get_current_user)], changes: OptionalUser) -> BaseUser:
+    if not user:
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+    if user.id != id and not user.isAdmin:
+        raise HTTPException(status_code=403, detail="Invalid credentials")
+    for u in users:
+        if u["id"] == id:
+            for key, value in changes.model_dump().items():
+                if value:
+                    u[key] = value
+            return BaseUser(**u)
+    raise HTTPException(status_code=404, detail="User not found")
+
 # POST /user/{id} (optional)
 # DELETE /user/{id} (optional)
+
+# GET /user/me
+@app.get("/user/me")
+async def read_users_me(user: Annotated[User|None, Depends(get_current_user)]) -> BaseUser:
+    if not user:
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+    return user
+
+# GET /user/me
+@app.patch("/user/me")
+async def update_users_me(user: Annotated[User|None, Depends(get_current_user)], changes: OptionalUser) -> BaseUser:
+    if not user:
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+    return await update_user(user.id, user, changes)
 
 # POST /purchase
 @app.post("/purchase")
