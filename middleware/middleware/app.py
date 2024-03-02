@@ -32,6 +32,13 @@ class User(BaseModel):
     address: str
     isAdmin: bool | None = None
 
+class PurchaseRecord(BaseModel):
+    id: int
+    success: bool
+    fail_prod: int | None = None
+    products: list[int]
+    message: str
+
 # TODO: Replace with database
 
 def product_generator(n):
@@ -185,4 +192,45 @@ async def delete_product(id: int):
 # GET /user/{id} (optional)
 # POST /user/{id} (optional)
 # DELETE /user/{id} (optional)
-# PUT /buy
+
+# POST /purchase
+@app.post("/purchase")
+async def purchase(user: Annotated[User|None, Depends(get_current_user)], product_ids: list[int]) -> PurchaseRecord:
+    if not user:
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+    if not product_ids:
+        raise HTTPException(status_code=400, detail="No products in cart")
+
+    total = 0
+    for id in product_ids:
+        product = get_product_by_id(id)
+        if not product:
+            return PurchaseRecord(
+                id = 1,
+                fail_prod = id,
+                success = False,
+                products = product_ids,
+                message = "Transaction failed: Product not found"
+            )
+        if product["stock"] == 0:
+            return PurchaseRecord(
+                id = 1,
+                fail_prod = id,
+                success = False,
+                products = product_ids,
+                message = "Transaction failed: Product out of stock"
+            )
+        total += product["price"]
+
+    for id in product_ids:
+        for product in products:
+            if product["id"] == id:
+                product["stock"] -= 1
+                continue
+
+    return PurchaseRecord(
+        id = 1,
+        success = True,
+        products = product_ids,
+        message = f"Transaction successful. Total: {round(total,2)}"
+    )

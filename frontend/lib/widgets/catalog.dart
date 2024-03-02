@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:frontend/models/product.dart';
 import 'package:frontend/models/cart.dart';
+import 'package:frontend/widgets/table.dart';
 
 // TODO: Make ProductDisplay an interface that ProductGrid and ProductList implement
 
@@ -87,9 +88,10 @@ class ProductList extends ProductGrid {
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
+    return ListView.separated(
       itemCount: products.length,
       padding: const EdgeInsets.all(8.0),
+      separatorBuilder: (BuildContext context, int index) => const Divider(),
       itemBuilder: (BuildContext context, int index) {
         return FutureBuilder<Product>(
           future: products[index],

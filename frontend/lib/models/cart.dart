@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/models/product.dart';
+import 'package:frontend/models/account.dart';
+import 'package:provider/provider.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class CartModel extends ChangeNotifier {
   /// Internal, private state of the cart.
@@ -48,5 +52,52 @@ class CartModel extends ChangeNotifier {
     _productIds.clear();
     // This call tells the widgets that are listening to this model to rebuild.
     notifyListeners();
+  }
+
+  // Purchase the items in the cart
+  Future<String> purchase(BuildContext context) async {
+    final response = await http.post(
+      Uri.parse('http://localhost:8000/purchase'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': 'Bearer ${Provider.of<AccountModel>(context, listen: false).token}',
+      },
+      body: jsonEncode(_productIds),
+    );
+
+    if (response.statusCode == 200) {
+      PurchaseRecord record = PurchaseRecord.fromJson(jsonDecode(response.body));
+      if (record.success) {
+        removeAll();
+      }
+      return record.message;
+    }
+    return 'Error: ${response.reasonPhrase}';
+  }
+}
+
+class PurchaseRecord {
+  final int id;
+  final bool success;
+  final int? failProd;
+  final List<int> products;
+  final String message;
+
+  const PurchaseRecord({
+      required this.id,
+      required this.success,
+      this.failProd,
+      required this.products,
+      required this.message
+  });
+
+  factory PurchaseRecord.fromJson(Map<String, dynamic> json) {
+    return PurchaseRecord(
+      id: json['id'] as int,
+      success: json['success'] as bool,
+      failProd: json['failProd'] as int?,
+      products: (json['products'] as List).map((e) => e as int).toList(),
+      message: json['message'] as String
+    );
   }
 }

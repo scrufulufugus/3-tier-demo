@@ -5,6 +5,9 @@ class AccountModel extends ChangeNotifier {
   AccountModel();
 
   Account? _account;
+  String? _token;
+
+  String get token => _token ?? 'tester:password123';
 
   bool get isAuthenticated {
     return _account != null;

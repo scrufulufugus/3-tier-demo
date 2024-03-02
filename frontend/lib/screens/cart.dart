@@ -36,7 +36,7 @@ class CartPage extends StatelessWidget {
                   TextButton(
                     child: const Text('BUY'),
                     onPressed: () {
-                      cart.removeAll();
+                      cart.purchase(context);
                     },
                   ),
                 ],
