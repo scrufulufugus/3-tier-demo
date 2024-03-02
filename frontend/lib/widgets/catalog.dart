@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:frontend/models/product.dart';
 import 'package:frontend/models/cart.dart';
-import 'package:frontend/widgets/table.dart';
 
 // TODO: Make ProductDisplay an interface that ProductGrid and ProductList implement
 
