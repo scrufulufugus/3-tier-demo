@@ -38,9 +38,11 @@ class _AccountState extends State<AccountPage> {
                       Padding(
                         padding: const EdgeInsets.symmetric(
                             horizontal: 8, vertical: 16),
-                        child: Text(
-                          snapshot.data!.username,
-                          //style: Theme.of(context).primaryTextTheme.titleLarge,
+                        child: TextFormField(
+                          initialValue: snapshot.data!.username,
+                          readOnly: true,
+                          decoration: const InputDecoration(
+                              border: OutlineInputBorder(), labelText: "Username"),
                         ),
                       ),
                       Padding(
@@ -52,6 +54,9 @@ class _AccountState extends State<AccountPage> {
                           decoration: const InputDecoration(
                               border: OutlineInputBorder(), labelText: "Email"),
                           validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return null;
+                            }
                             return null;
                           },
                         ),
@@ -120,22 +125,31 @@ class _AccountState extends State<AccountPage> {
                             horizontal: 8, vertical: 16.0),
                         child: Center(
                           child: ElevatedButton(
-                            onPressed: () {
+                            onPressed: () async {
                               if (_formKey.currentState!.validate()) {
+                                String? nullIfUnchanged(String? value, String? original) {
+                                  if (value == null || value.isEmpty) {
+                                    return null;
+                                  }
+                                  return value == original ? null : value;
+                                }
+
                                 // Submit to backend
                                 AccountOut update = AccountOut(
-                                    id: snapshot.data!.id,
-                                    email: emailController.text,
-                                    password: passwordController.text,
-                                    phone: phoneController.text,
-                                    address: addressController.text);
+                                  id: snapshot.data!.id,
+                                  email: nullIfUnchanged(emailController.text, snapshot.data!.email),
+                                  password: nullIfUnchanged(passwordController.text, snapshot.data!.password),
+                                  phone: nullIfUnchanged(phoneController.text, snapshot.data!.phone),
+                                  address: nullIfUnchanged(addressController.text, snapshot.data!.address),
+                                );
 
                                 // TODO: Make async call to update account
-                                //String status = account.update(update, currentPasswordController.text);
-                                String status = "Success";
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(content: Text(status)),
-                                );
+                                String status = await account.update(update, currentPasswordController.text);
+                                if (context.mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(content: Text(status)),
+                                  );
+                                }
                               } else {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(

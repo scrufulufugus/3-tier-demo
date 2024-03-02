@@ -39,7 +39,7 @@ class AccountModel extends ChangeNotifier {
     return true;
   }
 
-  Future<bool> login(String username, String password) async {
+  Future<bool> _login(String username, String password) async {
     final response = await http.post(
       Uri.parse('http://localhost:8000/token'),
       headers: <String, String>{
@@ -53,12 +53,20 @@ class AccountModel extends ChangeNotifier {
     );
     if (response.statusCode == 200) {
       _token = jsonDecode(response.body)['access_token'];
-      notifyListeners();
       return true;
     } else if (response.statusCode == 401) {
       return false;
     } else {
       throw Exception('Failed to login');
+    }
+  }
+
+  Future<bool> login(String username, String password) async {
+    if (await _login(username, password)) {
+      notifyListeners();
+      return true;
+    } else {
+      return false;
     }
   }
 
@@ -73,7 +81,7 @@ class AccountModel extends ChangeNotifier {
     if (!isAuthenticated) {
       return "You must be logged in to update your account";
     }
-    if (!await login((await info).username, currentPassword)) {
+    if (!await _login((await info).username, currentPassword)) {
       return "Incorrect password";
     }
 
@@ -86,10 +94,13 @@ class AccountModel extends ChangeNotifier {
       body: jsonEncode(update),
     );
     if (response.statusCode == 200) {
+      if (update.password != null) {
+        await _login(jsonDecode(response.body)['username'], update.password!);
+      }
       notifyListeners();
       return "Account updated";
     } else {
-      return "Failed to update account";
+      return "Failed to update account: ${response.reasonPhrase}";
     }
   }
 }
@@ -176,11 +187,11 @@ class AccountOut extends Account {
       isAdmin: null
   );
 
-  static Map<String, dynamic> toJson(Account value) =>
+  Map<String, dynamic> toJson() =>
       {
-        'email': value.email,
-        'phone': value.phone,
-        'address': value.address,
-        'isAdmin': value.isAdmin
+        'email': email,
+        'password': password,
+        'phone': phone,
+        'address': address,
       }..removeWhere((key, value) => value == null);
 }
