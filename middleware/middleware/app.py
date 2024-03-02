@@ -127,15 +127,13 @@ async def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]):
 
 # GET /products
 @app.get("/products")
-async def get_products(user: Annotated[User|None, Depends(get_current_user)]) -> list[Product]:
-    product_list = [Product(**x) for x in products]
+async def get_products(user: Annotated[User|None, Depends(get_current_user)]) -> list[int]:
     if user and user.isAdmin:
-        return product_list
+        return [x['id'] for x in products]
 
-    # Hide stock if not authenticated
-    for p in product_list:
-        p.stock = 0
-    return product_list
+    # Return only products with stock
+    return [x['id'] for x in products if x['stock'] > 0]
+
 
 # POST /products
 @app.post("/product")
@@ -154,6 +152,7 @@ async def get_product(user: Annotated[User|None, Depends(get_current_user)], id:
         _prod = Product(**product)
         if not user or not user.isAdmin:
             if product["stock"] > 0:
+                # Hide stock if not authenticated
                 _prod.stock = None
             else:
                 # Don't show out of stock items to non-admins

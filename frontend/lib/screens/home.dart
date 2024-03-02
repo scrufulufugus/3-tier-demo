@@ -11,7 +11,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  late Future<List<Product>> futureProducts;
+  late Future<List<Future<Product>>> futureProducts;
 
   @override
   void initState() {
@@ -26,7 +26,7 @@ class _HomePageState extends State<HomePage> {
     return Material(
       child: Scaffold(
         appBar: const Header(),
-        body: FutureBuilder<List<Product>>(
+        body: FutureBuilder<List<Future<Product>>>(
           future: futureProducts,
           builder: (context, snapshot) {
             if (snapshot.hasData) {

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -6,7 +8,7 @@ class Product {
   final String title;
   final String description;
   final double price;
-  final int stock;
+  final int? stock;
   final String imageUrl;
 
   const Product({
@@ -15,7 +17,7 @@ class Product {
       required this.description,
       required this.price,
       required this.imageUrl,
-      this.stock = 0,
+      this.stock,
   });
 
   factory Product.fromJson(Map<String, dynamic> json) {
@@ -25,7 +27,7 @@ class Product {
         'title': String title,
         'description': String description,
         'price': double price,
-        'stock': int stock,
+        'stock': int? stock,
         'image': String imageUrl
       } => Product(
         id: id,
@@ -42,7 +44,7 @@ class Product {
 
 Future<Product> fetchProduct(int id) async {
   final response = await http
-      .get(Uri.parse('http://localhost:8000/products/$id'));
+      .get(Uri.parse('http://localhost:8000/product/$id'));
 
   if (response.statusCode == 200) {
     // If the server did return a 200 OK response,
@@ -51,25 +53,28 @@ Future<Product> fetchProduct(int id) async {
   } else {
     // If the server did not return a 200 OK response,
     // then throw an exception.
-    throw Exception('Failed to load album');
+    throw Exception('Failed to get product $id');
   }
 }
 
-Future<List<Product>> fetchProducts() async {
+Future<List<int>> fetchProductIds() async {
   final response = await http
       .get(Uri.parse('http://localhost:8000/products'));
 
   if (response.statusCode == 200) {
     // If the server did return a 200 OK response,
     // then parse the JSON.
-    List<Product> products = [];
-    for (var product in jsonDecode(response.body) as List) {
-      products.add(Product.fromJson(product as Map<String, dynamic>));
-    }
-    return products;
+    List<dynamic> ids = jsonDecode(response.body) as List<dynamic>;
+    return ids.map((id) => id as int).toList();
   } else {
     // If the server did not return a 200 OK response,
     // then throw an exception.
-    throw Exception('Failed to load album');
+    throw Exception('Failed to get product ids');
   }
+}
+
+Future<List<Future<Product>>> fetchProducts() async {
+  final response = await fetchProductIds();
+
+  return response.map((id) => fetchProduct(id)).toList();
 }

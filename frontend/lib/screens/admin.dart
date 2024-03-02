@@ -12,7 +12,7 @@ class AdminPage extends StatefulWidget {
 }
 
 class _AdminPageState extends State<AdminPage> {
-  late Future<List<Product>> futureProducts;
+  late Future<List<Future<Product>>> futureProducts;
 
   @override
   void initState() {
@@ -27,7 +27,7 @@ class _AdminPageState extends State<AdminPage> {
     return Material(
       child: Scaffold(
         appBar: const Header(),
-        body: FutureBuilder<List<Product>>(
+        body: FutureBuilder<List<Future<Product>>>(
           future: futureProducts,
           builder: (context, snapshot) {
             if (snapshot.hasData) {
