@@ -50,10 +50,12 @@ Future<Product> fetchProduct(int id) async {
     // If the server did return a 200 OK response,
     // then parse the JSON.
     return Product.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
+  } else if (response.statusCode == 404) {
+    return Future.error('Product not found');
   } else {
     // If the server did not return a 200 OK response,
     // then throw an exception.
-    throw Exception('Failed to get product $id');
+    throw Exception('Failed to get product');
   }
 }
 

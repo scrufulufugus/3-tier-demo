@@ -23,7 +23,16 @@ class CartPage extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  Text('Total: \$${cart.price}'),
+                  FutureBuilder<double>(
+                    future: cart.price,
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        return Text('Total: \$${snapshot.data!.toStringAsFixed(2)}');
+                      } else {
+                        return const CircularProgressIndicator();
+                      }
+                    }
+                  ),
                   TextButton(
                     child: const Text('BUY'),
                     onPressed: () {

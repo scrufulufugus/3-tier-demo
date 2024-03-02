@@ -63,7 +63,7 @@ class ProductGrid extends StatelessWidget {
                           child: const Text('ADD TO CART'),
                           onPressed: () {
                             Provider.of<CartModel>(context, listen: false)
-                                .add(snapshot.data!);
+                                .add(snapshot.data!.id);
                           },
                         ),
                       ],
@@ -129,25 +129,37 @@ class CartList extends ProductGrid {
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
-        scrollDirection: Axis.vertical,
-        shrinkWrap: true, // Fixes unbloud size error
-        itemCount: products.length,
-        padding: const EdgeInsets.all(8.0),
-        itemBuilder: (BuildContext context, int index) {
-          return Row(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(products[index].title),
-              Text('\$${products[index].price}'),
-              TextButton(
-                child: const Text('DELETE'),
-                onPressed: () {
-                  Provider.of<CartModel>(context, listen: false).remove(index);
-                },
-              ),
-            ],
-          );
-        });
+      scrollDirection: Axis.vertical,
+      shrinkWrap: true, // Fixes unbloud size error
+      itemCount: products.length,
+      padding: const EdgeInsets.all(8.0),
+      itemBuilder: (BuildContext context, int index) {
+        return FutureBuilder<Product>(
+          future: products[index],
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              return Row(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(snapshot.data!.title),
+                  Text('\$${snapshot.data!.price}'),
+                  TextButton(
+                    child: const Text('DELETE'),
+                    onPressed: () {
+                      Provider.of<CartModel>(context, listen: false)
+                          .removeAt(index);
+                    },
+                  ),
+                ],
+              );
+            } else if (snapshot.hasError) {
+              return Text('${snapshot.error}');
+            }
+            return const CircularProgressIndicator();
+          },
+        );
+      },
+    );
   }
 }
