@@ -28,7 +28,7 @@ class BaseUser(BaseModel):
     id: int
     username: str
     email: str
-    phone: int
+    phone: str
     address: str
     isAdmin: bool
 
@@ -40,7 +40,7 @@ class OptionalUser(User):
     username: SkipJsonSchema[None] = None
     email: str | None = None
     password: str | None = None
-    phone: int | None = None
+    phone: str | None = None
     address: str | None = None
     isAdmin: SkipJsonSchema[None] = None
 
@@ -90,7 +90,7 @@ users = [
         "username": "tester",
         "email": "test@example.com",
         "password": "password123",
-        "phone": 1234567890,
+        "phone": "1234567890",
         "address": "123, Test Street",
         "isAdmin": True
     },
@@ -99,7 +99,7 @@ users = [
         "username": "testee",
         "email": "testee@example.com",
         "password": "password321",
-        "phone": 1234567890,
+        "phone": "1234567890",
         "address": "123, Testee Street",
         "isAdmin": False
     }
