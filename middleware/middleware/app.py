@@ -4,7 +4,9 @@ from fastapi import FastAPI, HTTPException, Depends
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from pydantic import BaseModel
 
+# TODO: Temp Dependencies
 import random
+from copy import deepcopy
 
 app = FastAPI()
 
@@ -69,7 +71,13 @@ users = [
 def get_user(username):
     for user in users:
         if user['username'] == username:
-            return user
+            return deepcopy(user)
+    return None
+
+def get_product_by_id(id):
+    for product in products:
+        if product['id'] == id:
+            return deepcopy(product)
     return None
 
 
@@ -140,10 +148,17 @@ async def create_product(user: Annotated[User|None, Depends(get_current_user)], 
 
 # GET /products/{id}
 @app.get("/product/{id}")
-async def get_product(id: int) -> Product:
-    for product in products:
-        if product["id"] == id:
-            return Product(**product)
+async def get_product(user: Annotated[User|None, Depends(get_current_user)], id: int) -> Product:
+    product = get_product_by_id(id)
+    if product:
+        _prod = Product(**product)
+        if not user or not user.isAdmin:
+            if product["stock"] > 0:
+                _prod.stock = None
+            else:
+                # Don't show out of stock items to non-admins
+                raise HTTPException(status_code=404, detail="Product not found")
+        return _prod
     raise HTTPException(status_code=404, detail="Product not found")
 
 # POST /products/{id}
