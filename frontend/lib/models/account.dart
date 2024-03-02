@@ -12,7 +12,7 @@ class AccountModel extends ChangeNotifier {
 
   Future<AccountIn> get info async {
     final response = await http.get(
-      Uri.parse('http://localhost:8000/user/me'),
+      Uri.parse('http://localhost:8000/me'),
       headers: <String, String>{
         'Authorization': 'Bearer $token',
       },
@@ -78,7 +78,7 @@ class AccountModel extends ChangeNotifier {
     }
 
     final response = await http.patch(
-      Uri.parse('http://localhost:8000/user/me'),
+      Uri.parse('http://localhost:8000/me'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
         'Authorization': 'Bearer $token',

@@ -240,14 +240,14 @@ async def update_user(id: int, user: Annotated[User|None, Depends(get_current_us
 # DELETE /user/{id} (optional)
 
 # GET /user/me
-@app.get("/user/me")
+@app.get("/me")
 async def read_users_me(user: Annotated[User|None, Depends(get_current_user)]) -> BaseUser:
     if not user:
         raise HTTPException(status_code=401, detail="Invalid credentials")
     return user
 
 # GET /user/me
-@app.patch("/user/me")
+@app.patch("/me")
 async def update_users_me(user: Annotated[User|None, Depends(get_current_user)], changes: OptionalUser) -> BaseUser:
     if not user:
         raise HTTPException(status_code=401, detail="Invalid credentials")
