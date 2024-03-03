@@ -64,7 +64,7 @@ class _LoginState extends State<LoginPage> {
                       const EdgeInsets.symmetric(horizontal: 8, vertical: 16.0),
                   child: Center(
                     child: ElevatedButton(
-                      onPressed: () {
+                      onPressed: () async {
                         if (_formKey.currentState!.validate()) {
                           // Skip logging in if we already are
                           if (account.isAuthenticated) {
@@ -74,11 +74,21 @@ class _LoginState extends State<LoginPage> {
                             );
                             return;
                           }
+                          bool logIn = await account.login(usernameController.text, passwordController.text);
                           // Submit to backend
-                          account.login(
-                              usernameController.text, passwordController.text);
-                          // Navigate the user to the Home page
-                          context.go('/');
+                          if (context.mounted) {
+                            if (logIn) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text('Login Successful')),
+                              );
+                              // Navigate the user to the Home page
+                              context.go('/');
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text('Login Failed')),
+                              );
+                            }
+                          }
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(content: Text('Please fill input')),
