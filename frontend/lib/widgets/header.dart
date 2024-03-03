@@ -16,7 +16,7 @@ class Header extends StatelessWidget implements PreferredSizeWidget {
           style: Theme.of(context).primaryTextTheme.titleLarge
         ),
         onPressed: () {
-          context.go('/');
+          context.push('/');
         },
       ),
       actions: [
@@ -30,14 +30,14 @@ class Header extends StatelessWidget implements PreferredSizeWidget {
                   PopupMenuItem(
                     child: const Text('My Account'),
                     onTap: () {
-                      context.go('/account');
+                      context.push('/account');
                     },
                   ),
                   if (account.isAdmin)
                     PopupMenuItem(
                       child: const Text('Admin Panel'),
                       onTap: () {
-                        context.go('/admin');
+                        context.push('/admin');
                       },
                     ),
                   PopupMenuItem(
@@ -53,7 +53,7 @@ class Header extends StatelessWidget implements PreferredSizeWidget {
                     child: const Text('Sign In'),
                     onTap: () {
                       // Navigate to sign in page
-                      context.go('/account/login');
+                      context.push('/account/login');
                     },
                   ),
                   const PopupMenuItem(
@@ -71,7 +71,7 @@ class Header extends StatelessWidget implements PreferredSizeWidget {
                     icon: const Icon(Icons.shopping_cart),
                     tooltip: 'Cart',
                     onPressed: () {
-                      context.go('/cart');
+                      context.push('/cart');
                     },
               ))),
       ],
