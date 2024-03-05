@@ -61,10 +61,20 @@ abstract class Catalog extends ChangeNotifier {
 class CatalogModel extends Catalog {
   CatalogModel();
 
-  void updateList({String? token}) async {
+  String? _token;
+  set token(String? value) {
+    _token = value;
+    updateList();
+  }
+
+  @override
+  List<Future<Product>> get products =>
+      productIds.map((id) => fetchProduct(id, token: _token)).toList();
+
+  void updateList() async {
     productIds.clear();
-    if (token != null) {
-      productIds.addAll(await fetchProductIds(token: token));
+    if (_token != null) {
+      productIds.addAll(await fetchProductIds(token: _token));
     } else {
       productIds.addAll(await fetchProductIds());
     }

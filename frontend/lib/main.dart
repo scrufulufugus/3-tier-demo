@@ -55,7 +55,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (context) => AccountModel()),
         ChangeNotifierProxyProvider<AccountModel, CatalogModel>(
           create: (_) => CatalogModel(),
-          update: (_, account, previous) => previous!..updateList(token: account.token),
+          update: (_, account, previous) => previous!..token = account.token,
         ),
       ],
       child: MaterialApp.router(
