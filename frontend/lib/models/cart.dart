@@ -1,22 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/models/product.dart';
+import 'package:frontend/models/catalog.dart';
 import 'package:frontend/models/account.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-class CartModel extends ChangeNotifier {
-  /// Internal, private state of the cart.
-  final List<int> _productIds = [];
-
-  List<Future<Product>> get products => _productIds.map((id) => fetchProduct(id)).toList();
-
-  // void updateList() async {
-  //   _productIds.clear();
-  //   _productIds.addAll(await fetchProductIds());
-  //   notifyListeners();
-  // }
-
+class CartModel extends Catalog {
   /// The current total price of all items.
   Future<double> get price async {
     double price = 0;
@@ -26,30 +15,33 @@ class CartModel extends ChangeNotifier {
     return price;
   }
 
-  int get length => _productIds.length;
+  int get length => productIds.length;
 
   /// Adds [item] to cart. This and [removeAll] are the only ways to modify the
   /// cart from the outside.
+  @override
   void add(int id) {
-    _productIds.add(id);
+    productIds.add(id);
     // This call tells the widgets that are listening to this model to rebuild.
     notifyListeners();
   }
 
+  @override
   void remove(int id) {
-    if(_productIds.remove(id)) {
+    if(productIds.remove(id)) {
       notifyListeners();
     }
   }
 
+  @override
   void removeAt(int index) {
-    _productIds.removeAt(index);
+    productIds.removeAt(index);
     notifyListeners();
   }
 
   /// Removes all items from the cart.
   void removeAll() {
-    _productIds.clear();
+    productIds.clear();
     // This call tells the widgets that are listening to this model to rebuild.
     notifyListeners();
   }
@@ -62,7 +54,7 @@ class CartModel extends ChangeNotifier {
         'Content-Type': 'application/json; charset=UTF-8',
         'Authorization': 'Bearer ${Provider.of<AccountModel>(context, listen: false).token}',
       },
-      body: jsonEncode(_productIds),
+      body: jsonEncode(productIds),
     );
 
     if (response.statusCode == 200) {

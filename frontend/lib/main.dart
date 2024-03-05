@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/models/catalog.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:frontend/models/cart.dart';
@@ -52,6 +53,10 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (context) => CartModel()),
         ChangeNotifierProvider(create: (context) => AccountModel()),
+        ChangeNotifierProxyProvider<AccountModel, CatalogModel>(
+          create: (_) => CatalogModel(),
+          update: (_, account, previous) => previous!..updateList(token: account.token),
+        ),
       ],
       child: MaterialApp.router(
           title: 'Sumazon',
