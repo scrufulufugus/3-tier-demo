@@ -42,9 +42,13 @@ class Product {
   }
 }
 
-Future<Product> fetchProduct(int id) async {
+Future<Product> fetchProduct(int id, {String? token}) async {
   final response = await http
-      .get(Uri.parse('http://localhost:8000/product/$id'));
+      .get(Uri.parse('http://localhost:8000/product/$id'),
+        headers: <String, String>{
+          if (token != null) 'Authorization': 'Bearer $token',
+        },
+      );
 
   if (response.statusCode == 200) {
     // If the server did return a 200 OK response,
@@ -59,9 +63,13 @@ Future<Product> fetchProduct(int id) async {
   }
 }
 
-Future<List<int>> fetchProductIds() async {
+Future<List<int>> fetchProductIds({String? token}) async {
   final response = await http
-      .get(Uri.parse('http://localhost:8000/products'));
+      .get(Uri.parse('http://localhost:8000/products'),
+        headers: <String, String>{
+          if (token != null) 'Authorization': 'Bearer $token',
+        },
+      );
 
   if (response.statusCode == 200) {
     // If the server did return a 200 OK response,
@@ -75,8 +83,8 @@ Future<List<int>> fetchProductIds() async {
   }
 }
 
-Future<List<Future<Product>>> fetchProducts() async {
-  final response = await fetchProductIds();
+Future<List<Future<Product>>> fetchProducts({String? token}) async {
+  final response = await fetchProductIds(token: token);
 
-  return response.map((id) => fetchProduct(id)).toList();
+  return response.map((id) => fetchProduct(id, token: token)).toList();
 }

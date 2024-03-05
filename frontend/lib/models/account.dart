@@ -8,7 +8,7 @@ class AccountModel extends ChangeNotifier {
 
   String? _token;
 
-  String get token => _token ?? 'tester:password123';
+  String get token => _token ?? '';
 
   Future<AccountIn> get info async {
     final response = await http.get(
