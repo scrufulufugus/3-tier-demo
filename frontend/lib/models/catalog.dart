@@ -8,9 +8,14 @@ abstract class Catalog extends ChangeNotifier {
   String? token_;
   @protected
   final List<int> productIds_ = [];
+  @protected
+  final Map<int, Future<Product>> prodCache_ = {};
+  @protected
+  Future<Product> fromCache_(int id) => prodCache_.putIfAbsent(id, () => fetchProduct_(id));
+
   List<Future<Product>> get products =>
-      productIds_.map((id) => fetchProduct_(id)).toList();
-  operator [](index) => fetchProduct_(productIds_[index]);
+      productIds_.map((id) => fromCache_(id)).toList();
+  operator [](index) => fromCache_(productIds_[index]);
   int get length => productIds_.length;
 
   void add(int id);
@@ -72,6 +77,7 @@ class CatalogModel extends Catalog {
 
   void updateList() async {
     productIds_.clear();
+    prodCache_.clear();
     if (token_ != null) {
       productIds_.addAll(await fetchProductIds(token: token_));
     } else {
@@ -94,6 +100,7 @@ class CatalogModel extends Catalog {
       throw Exception('Cannot remove from catalog without a token');
     }
     if (productIds_.remove(id)) {
+      prodCache_.remove(id); // Drop from cache
       return true;
     }
     return false;
