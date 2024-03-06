@@ -38,6 +38,7 @@ dependencies:
   provider: ^6.1.1
   go_router: ^13.2.0
   http: ^1.2.1
+  flutter_multi_formatter: ^2.12.4
 
 dev_dependencies:
   flutter_test:
