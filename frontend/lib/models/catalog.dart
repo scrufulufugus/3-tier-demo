@@ -4,21 +4,25 @@ import 'package:flutter/material.dart';
 import 'package:frontend/models/product.dart';
 
 abstract class Catalog extends ChangeNotifier {
-  /// Internal, private state of the cart.
   @protected
-  final List<int> productIds = [];
+  String? token_;
+  @protected
+  final List<int> productIds_ = [];
   List<Future<Product>> get products =>
-      productIds.map((id) => fetchProduct(id)).toList();
+      productIds_.map((id) => fetchProduct_(id)).toList();
+  operator [](index) => fetchProduct_(productIds_[index]);
+  int get length => productIds_.length;
+
   void add(int id);
   void remove(int id);
   void removeAt(int index);
 
   @protected
-  static Future<Product> fetchProduct(int id, {String? token}) async {
+  Future<Product> fetchProduct_(int id) async {
     final response = await http.get(
       Uri.parse('http://localhost:8000/product/$id'),
       headers: <String, String>{
-        if (token != null) 'Authorization': 'Bearer $token',
+        if (token_ != null) 'Authorization': 'Bearer $token_',
       },
     );
 
@@ -37,11 +41,11 @@ abstract class Catalog extends ChangeNotifier {
   }
 
   @protected
-  static Future<List<int>> fetchProductIds({String? token}) async {
+  Future<List<int>> fetchProductIds_() async {
     final response = await http.get(
       Uri.parse('http://localhost:8000/products'),
       headers: <String, String>{
-        if (token != null) 'Authorization': 'Bearer $token',
+        if (token_ != null) 'Authorization': 'Bearer $token_',
       },
     );
 
@@ -61,42 +65,52 @@ abstract class Catalog extends ChangeNotifier {
 class CatalogModel extends Catalog {
   CatalogModel();
 
-  String? _token;
   set token(String? value) {
-    _token = value;
+    token_ = value;
     updateList();
   }
 
-  @override
-  List<Future<Product>> get products =>
-      productIds.map((id) => fetchProduct(id, token: _token)).toList();
-
   void updateList() async {
-    productIds.clear();
-    if (_token != null) {
-      productIds.addAll(await fetchProductIds(token: _token));
+    productIds_.clear();
+    if (token_ != null) {
+      productIds_.addAll(await fetchProductIds(token: token_));
     } else {
-      productIds.addAll(await fetchProductIds());
+      productIds_.addAll(await fetchProductIds(token: token_));
     }
     notifyListeners();
   }
 
   @override
   void add(int id) {
-    productIds.add(id);
-    notifyListeners();
+    if (token_ == null) {
+      throw Exception('Cannot add to catalog without a token');
+    }
+    productIds_.add(id);
+  }
+
+  /// TODO: Call to server and update list
+  bool _remove(int id) {
+    if (token_ == null) {
+      throw Exception('Cannot remove from catalog without a token');
+    }
+    if (productIds_.remove(id)) {
+      return true;
+    }
+    return false;
   }
 
   @override
   void remove(int id) {
-    if (productIds.remove(id)) {
+    if (_remove(id)) {
       notifyListeners();
     }
   }
 
   @override
   void removeAt(int index) {
-    productIds.removeAt(index);
-    notifyListeners();
+    int id = productIds_[index];
+    if (_remove(id)) {
+      notifyListeners();
+    }
   }
 }

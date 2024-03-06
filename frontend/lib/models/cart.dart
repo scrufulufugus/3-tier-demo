@@ -15,33 +15,31 @@ class CartModel extends Catalog {
     return price;
   }
 
-  int get length => productIds.length;
-
   /// Adds [item] to cart. This and [removeAll] are the only ways to modify the
   /// cart from the outside.
   @override
   void add(int id) {
-    productIds.add(id);
+    productIds_.add(id);
     // This call tells the widgets that are listening to this model to rebuild.
     notifyListeners();
   }
 
   @override
   void remove(int id) {
-    if(productIds.remove(id)) {
+    if(productIds_.remove(id)) {
       notifyListeners();
     }
   }
 
   @override
   void removeAt(int index) {
-    productIds.removeAt(index);
+    productIds_.removeAt(index);
     notifyListeners();
   }
 
   /// Removes all items from the cart.
   void removeAll() {
-    productIds.clear();
+    productIds_.clear();
     // This call tells the widgets that are listening to this model to rebuild.
     notifyListeners();
   }
@@ -54,7 +52,7 @@ class CartModel extends Catalog {
         'Content-Type': 'application/json; charset=UTF-8',
         'Authorization': 'Bearer ${Provider.of<AccountModel>(context, listen: false).token}',
       },
-      body: jsonEncode(productIds),
+      body: jsonEncode(productIds_),
     );
 
     if (response.statusCode == 200) {

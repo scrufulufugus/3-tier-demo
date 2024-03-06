@@ -16,7 +16,7 @@ class HomePage extends StatelessWidget {
         appBar: const Header(),
         body: Consumer<CatalogModel>(
           builder: (context, catalog, child) =>
-              ProductGrid(products: catalog.products),
+              ProductGrid(catalog: catalog),
         ),
       ),
     );

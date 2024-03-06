@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/models/catalog.dart';
 import 'package:provider/provider.dart';
 import 'package:frontend/models/product.dart';
 import 'package:frontend/models/cart.dart';
@@ -25,13 +26,13 @@ class ProductDisplay extends FutureBuilder<Product> {
 }
 
 class ProductGrid extends StatelessWidget {
-  const ProductGrid({required this.products, super.key});
-  final List<Future<Product>> products;
+  const ProductGrid({required this.catalog, super.key});
+  final Catalog catalog;
 
   @override
   Widget build(BuildContext context) {
     return GridView.builder(
-      itemCount: products.length,
+      itemCount: catalog.length,
       padding: const EdgeInsets.all(8.0),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 3,
@@ -42,7 +43,7 @@ class ProductGrid extends StatelessWidget {
       itemBuilder: (BuildContext context, int index) {
         return Card(
           child: FutureBuilder<Product>(
-          future: products[index],
+          future: catalog[index],
             builder: (context, snapshot) {
               if (snapshot.hasData) {
                 return Column(
@@ -82,18 +83,19 @@ class ProductGrid extends StatelessWidget {
   }
 }
 
-class ProductList extends ProductGrid {
-  const ProductList({required super.products, super.key});
+class ProductList extends StatelessWidget {
+  const ProductList({required this.catalog, super.key});
+  final Catalog catalog;
 
   @override
   Widget build(BuildContext context) {
     return ListView.separated(
-      itemCount: products.length,
+      itemCount: catalog.length,
       padding: const EdgeInsets.all(8.0),
       separatorBuilder: (BuildContext context, int index) => const Divider(),
       itemBuilder: (BuildContext context, int index) {
         return FutureBuilder<Product>(
-          future: products[index],
+          future: catalog[index],
           builder: (context, snapshot) {
             if (snapshot.hasData) {
               return Row(
@@ -107,8 +109,7 @@ class ProductList extends ProductGrid {
                   TextButton(
                     child: const Text('DELETE'),
                     onPressed: () {
-                      // FIXME: Dosn't update the UI
-                      products.removeAt(index);
+                      catalog.removeAt(index);
                     },
                   ),
                 ],
@@ -124,19 +125,20 @@ class ProductList extends ProductGrid {
   }
 }
 
-class CartList extends ProductGrid {
-  const CartList({required super.products, super.key});
+class CartList extends StatelessWidget {
+  const CartList({required this.catalog, super.key});
+  final Catalog catalog;
 
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
       scrollDirection: Axis.vertical,
       shrinkWrap: true, // Fixes unbloud size error
-      itemCount: products.length,
+      itemCount: catalog.length,
       padding: const EdgeInsets.all(8.0),
       itemBuilder: (BuildContext context, int index) {
         return FutureBuilder<Product>(
-          future: products[index],
+          future: catalog[index],
           builder: (context, snapshot) {
             if (snapshot.hasData) {
               return Row(
@@ -148,8 +150,7 @@ class CartList extends ProductGrid {
                   TextButton(
                     child: const Text('DELETE'),
                     onPressed: () {
-                      Provider.of<CartModel>(context, listen: false)
-                          .removeAt(index);
+                      catalog.removeAt(index);
                     },
                   ),
                 ],

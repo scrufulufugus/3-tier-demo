@@ -22,7 +22,7 @@ class AdminPage extends StatelessWidget {
             }
             return Consumer<CatalogModel>(
               builder: (context, catalog, child) =>
-                  ProductList(products: catalog.products),
+                  ProductList(catalog: catalog),
             );
           },
         ),

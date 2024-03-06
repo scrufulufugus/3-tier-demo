@@ -18,7 +18,7 @@ class CartPage extends StatelessWidget {
           builder: (context, cart, child) => Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              CartList(products: cart.products),
+              CartList(catalog: cart),
               Row(
                 mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.end,
