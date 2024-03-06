@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/models/catalog.dart';
 import 'package:provider/provider.dart';
+import 'package:go_router/go_router.dart';
+import 'package:frontend/models/catalog.dart';
 import 'package:frontend/models/product.dart';
 import 'package:frontend/models/cart.dart';
 
@@ -85,6 +86,12 @@ class ProductList extends StatelessWidget {
                   Text(snapshot.data!.description),
                   Text('\$${snapshot.data!.price}'),
                   Text('Stock: ${snapshot.data!.stock}'),
+                  TextButton(
+                    child: const Text('EDIT'),
+                    onPressed: () {
+                      context.push("/admin/edit/${snapshot.data!.id}");
+                    },
+                  ),
                   TextButton(
                     child: const Text('DELETE'),
                     onPressed: () {

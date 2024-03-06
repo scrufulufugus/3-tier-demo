@@ -9,6 +9,7 @@ import 'package:frontend/screens/cart.dart';
 import 'package:frontend/screens/login.dart';
 import 'package:frontend/screens/account.dart';
 import 'package:frontend/screens/admin.dart';
+import 'package:frontend/screens/edit.dart';
 
 final _router = GoRouter(
   routes: [
@@ -19,6 +20,10 @@ final _router = GoRouter(
     GoRoute(
       path: '/admin',
       builder: (context, state) => const AdminPage(),
+    ),
+    GoRoute(
+      path: '/admin/edit/:id',
+      builder: (context, state) => EditPage(productId: int.parse(state.pathParameters['id'] ?? "1")),
     ),
     GoRoute(
       path: '/account',

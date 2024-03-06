@@ -10,12 +10,11 @@ abstract class Catalog extends ChangeNotifier {
   final List<int> productIds_ = [];
   @protected
   final Map<int, Future<Product>> prodCache_ = {};
-  @protected
-  Future<Product> fromCache_(int id) => prodCache_.putIfAbsent(id, () => fetchProduct_(id));
 
+  Future<Product> get(int id) => prodCache_.putIfAbsent(id, () => fetchProduct_(id));
   List<Future<Product>> get products =>
-      productIds_.map((id) => fromCache_(id)).toList();
-  operator [](index) => fromCache_(productIds_[index]);
+      productIds_.map((id) => get(id)).toList();
+  operator [](index) => get(productIds_[index]);
   int get length => productIds_.length;
 
   void add(int id);
