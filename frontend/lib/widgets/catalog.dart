@@ -4,27 +4,6 @@ import 'package:provider/provider.dart';
 import 'package:frontend/models/product.dart';
 import 'package:frontend/models/cart.dart';
 
-// TODO: Make ProductDisplay an interface that ProductGrid and ProductList implement
-
-// TODO: Make ProductGrid and ProductList generic
-class ProductDisplay extends FutureBuilder<Product> {
-  ProductDisplay({required this.product, required this.child, super.key})
-      : super(
-          future: product,
-          builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              return child;
-            } else if (snapshot.hasError) {
-              return Text('${snapshot.error}');
-            }
-            return const CircularProgressIndicator();
-          },
-        );
-
-  final Future<Product> product;
-  final Widget child;
-}
-
 class ProductGrid extends StatelessWidget {
   const ProductGrid({required this.catalog, super.key});
   final Catalog catalog;
