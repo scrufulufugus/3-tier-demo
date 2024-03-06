@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:frontend/models/catalog.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 import 'package:frontend/models/cart.dart';
 import 'package:frontend/models/account.dart';
 import 'package:frontend/screens/home.dart';
@@ -45,6 +46,7 @@ final _router = GoRouter(
 );
 
 void main() {
+  Intl.defaultLocale = 'en_US';
   runApp(const MyApp());
 }
 

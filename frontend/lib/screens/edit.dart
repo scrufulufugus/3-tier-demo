@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:currency_text_input_formatter/currency_text_input_formatter.dart';
 import 'package:frontend/models/catalog.dart';
 import 'package:frontend/models/product.dart';
 import 'package:frontend/widgets/header.dart';
@@ -15,6 +16,9 @@ class EditPage extends StatefulWidget {
 
 class _AccountState extends State<EditPage> {
   final _formKey = GlobalKey<FormState>();
+  final CurrencyTextInputFormatter _currencyFormat = CurrencyTextInputFormatter(
+    symbol: '\$',
+  );
   TextEditingController nameController = TextEditingController();
   TextEditingController descriptionController = TextEditingController();
   TextEditingController priceController = TextEditingController();
@@ -76,13 +80,17 @@ class _AccountState extends State<EditPage> {
                             horizontal: 8, vertical: 16),
                         child: TextFormField(
                           controller: priceController
-                            ..text = snapshot.data!.price.toString(),
+                            ..text = _currencyFormat.formatDouble(snapshot.data!.price),
                           keyboardType: TextInputType.number,
+                          inputFormatters: <TextInputFormatter>[_currencyFormat],
                           decoration: const InputDecoration(
                               border: OutlineInputBorder(), labelText: "Price"),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
                               return 'Please enter the price';
+                            }
+                            if (_currencyFormat.getUnformattedValue() < 0.01) {
+                              return 'Please enter a price greater than \$0.01';
                             }
                             return null;
                           },
@@ -104,6 +112,9 @@ class _AccountState extends State<EditPage> {
                             if (value == null || value.isEmpty) {
                               return 'Please enter the stock';
                             }
+                            if (int.parse(value) < 0) {
+                              return 'Please enter a stock greater than 0';
+                            }
                             return null;
                           },
                         ),
@@ -122,10 +133,9 @@ class _AccountState extends State<EditPage> {
                                   }
                                   return value == original ? null : value;
                                 }
-
                                 if (context.mounted) {
                                   ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(content: Text("Submitted")),
+                                    SnackBar(content: Text(_currencyFormat.getUnformattedValue().toString())),
                                   );
                                 }
                               } else {
