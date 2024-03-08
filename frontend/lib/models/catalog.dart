@@ -107,6 +107,26 @@ class CatalogModel extends Catalog {
     }
   }
 
+  void update(int id, ProductBase update) async {
+    if (token_ == null) {
+      throw Exception('Cannot update catalog without a token');
+    }
+    final response = await http.post(
+      Uri.parse('$endpoint/product/$id'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': 'Bearer $token_',
+      },
+      body: jsonEncode(update.toJson()),
+    );
+
+    if (response.statusCode == 200) {
+      updateList();
+    } else {
+      throw Exception('Failed to update product');
+    }
+  }
+
   void _remove(int id) async {
     if (token_ == null) {
       throw Exception('Cannot remove from catalog without a token');

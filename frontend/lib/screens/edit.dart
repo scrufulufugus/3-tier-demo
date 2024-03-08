@@ -21,16 +21,18 @@ class EditPage extends StatelessWidget {
               return ProductForm(
                 product: snapshot.data,
                 onSubmit: (context, product) {
-                  String? nullIfUnchanged(String? value, String? original) {
-                    if (value == null || value.isEmpty) {
-                      return null;
-                    }
-                    return value == original ? null : value;
-                  }
+                  // TODO: Make POST route a PATCH route
+                  // String? nullIfUnchanged(String? value, String? original) {
+                  //   if (value == null || value.isEmpty) {
+                  //     return null;
+                  //   }
+                  //   return value == original ? null : value;
+                  // }
+                  catalog.update(productId, product);
 
                   if (context.mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Saving changes')),
+                      const SnackBar(content: Text('Updated product')),
                     );
                   }
                 },
