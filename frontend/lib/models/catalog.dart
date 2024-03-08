@@ -19,7 +19,6 @@ abstract class Catalog extends ChangeNotifier {
   operator [](index) => get(productIds_[index]);
   int get length => productIds_.length;
 
-  void add(int id);
   void remove(int id);
   void removeAt(int index);
 
@@ -87,38 +86,52 @@ class CatalogModel extends Catalog {
     notifyListeners();
   }
 
-  @override
-  void add(int id) {
+  void add(ProductBase newProduct) async {
     if (token_ == null) {
       throw Exception('Cannot add to catalog without a token');
     }
-    productIds_.add(id);
+    final response = await http.post(
+      Uri.parse('$endpoint/product'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': 'Bearer $token_',
+      },
+      body: jsonEncode(newProduct.toJson()),
+    );
+
+    if (response.statusCode == 200) {
+      updateList();
+    } else {
+      throw Exception('Failed to add product');
+    }
   }
 
-  /// TODO: Call to server and update list
-  bool _remove(int id) {
+  void _remove(int id) async {
     if (token_ == null) {
       throw Exception('Cannot remove from catalog without a token');
     }
-    if (productIds_.remove(id)) {
-      prodCache_.remove(id); // Drop from cache
-      return true;
+    final response = await http.delete(
+      Uri.parse('$endpoint/product/$id'),
+      headers: <String, String>{
+        'Authorization': 'Bearer $token_',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      updateList();
+    } else {
+      throw Exception('Failed to delete product');
     }
-    return false;
   }
 
   @override
   void remove(int id) {
-    if (_remove(id)) {
-      notifyListeners();
-    }
+    _remove(id);
   }
 
   @override
   void removeAt(int index) {
     int id = productIds_[index];
-    if (_remove(id)) {
-      notifyListeners();
-    }
+    _remove(id);
   }
 }
