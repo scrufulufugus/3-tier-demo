@@ -5,7 +5,8 @@ import 'package:frontend/models/cart.dart';
 import 'package:frontend/models/account.dart';
 
 class Header extends StatelessWidget implements PreferredSizeWidget {
-  const Header({super.key});
+  const Header({super.key, this.bottom});
+  final PreferredSizeWidget? bottom;
 
   @override
   Widget build(BuildContext context) {
@@ -19,6 +20,7 @@ class Header extends StatelessWidget implements PreferredSizeWidget {
           context.push('/');
         },
       ),
+      bottom: bottom,
       actions: [
         Consumer<AccountModel>(
             builder: (context, account, child) => PopupMenuButton(

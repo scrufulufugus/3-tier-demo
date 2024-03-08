@@ -4,6 +4,7 @@ from fastapi import FastAPI, HTTPException, Depends
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from pydantic import BaseModel
 from pydantic.json_schema import SkipJsonSchema
+from sqlitedict import SqliteDict
 
 # TODO: Temp Dependencies
 import random
@@ -138,7 +139,7 @@ def get_current_user(token: Annotated[str|None, Depends(oauth2_scheme)]) -> User
 
 def append_product(product: ProductBase):
     product_dict = dict(product)
-    product_dict["id"] = len(products)+1
+    product_dict["id"] = products[-1]["id"]+1
     products.append(product_dict)
     return Product(**product_dict)
 
@@ -199,7 +200,7 @@ async def get_product(user: Annotated[User|None, Depends(get_current_user)], id:
 
 # POST /products/{id}
 @app.post("/product/{id}")
-async def update_product(id: int, product: Product) -> Product:
+async def update_product(id: int, product: ProductBase) -> Product:
     for p in products:
         if p["id"] == id:
             p["title"] = product.title

@@ -86,7 +86,7 @@ class CatalogModel extends Catalog {
     notifyListeners();
   }
 
-  void add(ProductBase newProduct) async {
+  Future<int> add(ProductBase newProduct) async {
     if (token_ == null) {
       throw Exception('Cannot add to catalog without a token');
     }
@@ -101,6 +101,7 @@ class CatalogModel extends Catalog {
 
     if (response.statusCode == 200) {
       updateList();
+      return jsonDecode(response.body)['id'] as int;
     } else {
       throw Exception('Failed to add product');
     }
