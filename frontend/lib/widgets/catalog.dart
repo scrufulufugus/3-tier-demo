@@ -7,7 +7,7 @@ import 'package:frontend/models/cart.dart';
 
 class ProductGrid extends StatelessWidget {
   const ProductGrid({required this.catalog, super.key});
-  final Catalog catalog;
+  final CatalogList catalog;
 
   @override
   Widget build(BuildContext context) {
@@ -65,7 +65,7 @@ class ProductGrid extends StatelessWidget {
 
 class ProductList extends StatelessWidget {
   const ProductList({required this.catalog, super.key});
-  final Catalog catalog;
+  final CatalogList catalog;
 
   @override
   Widget build(BuildContext context) {

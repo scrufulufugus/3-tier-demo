@@ -5,6 +5,29 @@ import 'package:flutter/material.dart';
 import 'package:frontend/middleware.dart';
 import 'package:frontend/models/product.dart';
 
+class CatalogList extends UnmodifiableListView<Future<Product>> {
+  CatalogList(super.source, this.catalog);
+  CatalogList.fromIds(List<int> ids, this.catalog)
+      : super(ids.map((id) => catalog.get(id)).toList());
+  final Catalog catalog;
+
+  @override
+  bool remove(Object? element) {
+    if (element is int) {
+      catalog.remove(element);
+      return true;
+    }
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<Product> removeAt(int index) async {
+    Future<Product> prod = super[index];
+    catalog.remove((await prod).id);
+    return prod;
+  }
+}
+
 abstract class Catalog extends ChangeNotifier {
   @protected
   String? token_;
@@ -14,9 +37,8 @@ abstract class Catalog extends ChangeNotifier {
   final Map<int, Future<Product>> prodCache_ = {};
 
   Future<Product> get(int id) => prodCache_.putIfAbsent(id, () => fetchProduct_(id));
-  List<Future<Product>> get products =>
-      productIds_.map((id) => get(id)).toList();
-  operator [](index) => get(productIds_[index]);
+  CatalogList get products => CatalogList.fromIds(productIds_, this);
+  Future<Product> operator [](int index) => get(productIds_[index]);
   int get length => productIds_.length;
 
   void remove(int id);
@@ -84,6 +106,14 @@ class CatalogModel extends Catalog {
     }
     productIds_..clear()..addAll(newIds);
     notifyListeners();
+  }
+
+  Future<CatalogList> filterBy(bool Function(Product) predicate) async {
+    List<Product> unwrappedProducts = await Future.wait(products);
+    return CatalogList.fromIds(
+      unwrappedProducts.where(predicate).map((prod) => prod.id).toList(),
+      this,
+    );
   }
 
   Future<int> add(ProductBase newProduct) async {
