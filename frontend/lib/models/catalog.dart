@@ -1,5 +1,6 @@
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/models/product.dart';
 
@@ -75,13 +76,13 @@ class CatalogModel extends Catalog {
   }
 
   void updateList() async {
-    productIds_.clear();
+    List<int> newIds = await fetchProductIds_();
     prodCache_.clear();
-    if (token_ != null) {
-      productIds_.addAll(await fetchProductIds(token: token_));
-    } else {
-      productIds_.addAll(await fetchProductIds(token: token_));
+    if (const DeepCollectionEquality.unordered().equals(productIds_, newIds)) {
+      //notifyListeners(); // Maybe?
+      return;
     }
+    productIds_..clear()..addAll(newIds);
     notifyListeners();
   }
 
