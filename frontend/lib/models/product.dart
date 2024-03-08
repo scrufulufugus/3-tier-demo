@@ -26,6 +26,11 @@ class ProductBase {
       'image': imageUrl
     };
   }
+
+  @override
+  String toString() {
+    return "$title:$description:\$$price";
+  }
 }
 
 class Product extends ProductBase {
