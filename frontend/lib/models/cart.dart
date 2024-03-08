@@ -1,9 +1,10 @@
-import 'package:flutter/material.dart';
-import 'package:frontend/models/catalog.dart';
-import 'package:frontend/models/account.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:frontend/middleware.dart';
+import 'package:flutter/material.dart';
+import 'package:frontend/models/catalog.dart';
+import 'package:frontend/models/account.dart';
 
 class CartModel extends Catalog {
   /// The current total price of all items.
@@ -47,7 +48,7 @@ class CartModel extends Catalog {
   // Purchase the items in the cart
   Future<String> purchase(BuildContext context) async {
     final response = await http.post(
-      Uri.parse('http://localhost:8000/purchase'),
+      Uri.parse('$endpoint/purchase'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
         'Authorization': 'Bearer ${Provider.of<AccountModel>(context, listen: false).token}',

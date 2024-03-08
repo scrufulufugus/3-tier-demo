@@ -1,7 +1,6 @@
-import 'dart:async';
-
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:frontend/middleware.dart';
 
 class Product {
   final int id;
@@ -44,7 +43,7 @@ class Product {
 
 Future<Product> fetchProduct(int id, {String? token}) async {
   final response = await http
-      .get(Uri.parse('http://localhost:8000/product/$id'),
+      .get(Uri.parse('$endpoint/product/$id'),
         headers: <String, String>{
           if (token != null) 'Authorization': 'Bearer $token',
         },
@@ -65,7 +64,7 @@ Future<Product> fetchProduct(int id, {String? token}) async {
 
 Future<List<int>> fetchProductIds({String? token}) async {
   final response = await http
-      .get(Uri.parse('http://localhost:8000/products'),
+      .get(Uri.parse('$endpoint/products'),
         headers: <String, String>{
           if (token != null) 'Authorization': 'Bearer $token',
         },

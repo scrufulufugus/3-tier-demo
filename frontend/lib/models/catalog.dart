@@ -2,6 +2,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
+import 'package:frontend/middleware.dart';
 import 'package:frontend/models/product.dart';
 
 abstract class Catalog extends ChangeNotifier {
@@ -25,7 +26,7 @@ abstract class Catalog extends ChangeNotifier {
   @protected
   Future<Product> fetchProduct_(int id) async {
     final response = await http.get(
-      Uri.parse('http://localhost:8000/product/$id'),
+      Uri.parse('$endpoint/product/$id'),
       headers: <String, String>{
         if (token_ != null) 'Authorization': 'Bearer $token_',
       },
@@ -48,7 +49,7 @@ abstract class Catalog extends ChangeNotifier {
   @protected
   Future<List<int>> fetchProductIds_() async {
     final response = await http.get(
-      Uri.parse('http://localhost:8000/products'),
+      Uri.parse('$endpoint/products'),
       headers: <String, String>{
         if (token_ != null) 'Authorization': 'Bearer $token_',
       },

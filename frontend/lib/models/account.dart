@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:frontend/middleware.dart';
 
 class AccountModel extends ChangeNotifier {
   AccountModel();
@@ -12,7 +13,7 @@ class AccountModel extends ChangeNotifier {
 
   Future<AccountIn> get info async {
     final response = await http.get(
-      Uri.parse('http://localhost:8000/me'),
+      Uri.parse('$endpoint/me'),
       headers: <String, String>{
         'Authorization': 'Bearer $token',
       },
@@ -41,7 +42,7 @@ class AccountModel extends ChangeNotifier {
 
   Future<bool> _login(String username, String password) async {
     final response = await http.post(
-      Uri.parse('http://localhost:8000/token'),
+      Uri.parse('$endpoint/token'),
       headers: <String, String>{
         'Content-Type': 'application/x-www-form-urlencoded',
       },
@@ -86,7 +87,7 @@ class AccountModel extends ChangeNotifier {
     }
 
     final response = await http.patch(
-      Uri.parse('http://localhost:8000/me'),
+      Uri.parse('$endpoint/me'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
         'Authorization': 'Bearer $token',
