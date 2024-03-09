@@ -45,12 +45,12 @@ class CartModel extends Catalog {
   }
 
   // Purchase the items in the cart
-  Future<String> purchase(BuildContext context) async {
+  Future<PurchaseRecord> purchase(String token) async {
     final response = await http.post(
       Uri.parse('$endpoint/purchase'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
-        'Authorization': 'Bearer ${Provider.of<AccountModel>(context, listen: false).token}',
+        'Authorization': 'Bearer $token',
       },
       body: jsonEncode(productIds_),
     );
@@ -60,9 +60,10 @@ class CartModel extends Catalog {
       if (record.success) {
         removeAll();
       }
-      return record.message;
+      return record;
+    } else {
+      throw Exception('Failed to purchase: ${response.reasonPhrase}');
     }
-    return 'Error: ${response.reasonPhrase}';
   }
 }
 
@@ -85,7 +86,7 @@ class PurchaseRecord {
     return PurchaseRecord(
       id: json['id'] as int,
       success: json['success'] as bool,
-      failProd: json['failProd'] as int?,
+      failProd: json['fail_at'] as int?,
       products: (json['products'] as List).map((e) => e as int).toList(),
       message: json['message'] as String
     );

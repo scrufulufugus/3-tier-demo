@@ -48,7 +48,7 @@ class OptionalUser(User):
 class PurchaseRecord(BaseModel):
     id: int
     success: bool
-    fail_prod: int | None = None
+    fail_at: int | None = None
     products: list[int]
     message: str
 
@@ -269,7 +269,7 @@ async def purchase(user: Annotated[User|None, Depends(get_current_user)], produc
         if not product:
             return PurchaseRecord(
                 id = 1,
-                fail_prod = id,
+                fail_at = id,
                 success = False,
                 products = product_ids,
                 message = "Transaction failed: Product not found"
@@ -277,7 +277,7 @@ async def purchase(user: Annotated[User|None, Depends(get_current_user)], produc
         if product["stock"] == 0:
             return PurchaseRecord(
                 id = 1,
-                fail_prod = id,
+                fail_at = id,
                 success = False,
                 products = product_ids,
                 message = "Transaction failed: Product out of stock"
@@ -294,5 +294,5 @@ async def purchase(user: Annotated[User|None, Depends(get_current_user)], produc
         id = 1,
         success = True,
         products = product_ids,
-        message = f"Transaction successful. Total: {round(total,2)}"
+        message = f"Transaction successful. Total: ${round(total,2)}"
     )
