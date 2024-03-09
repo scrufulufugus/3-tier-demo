@@ -9,6 +9,8 @@ class AccountModel extends ChangeNotifier {
 
   String? _token;
 
+  bool? _admin;
+
   String? get token => _token;
 
   Future<AccountIn> get info async {
@@ -32,12 +34,8 @@ class AccountModel extends ChangeNotifier {
     return _token != null;
   }
 
-  // Future<bool> get isAdmin async {
-  //   return info.then((account) => account.isAdmin);
-  // }
-  // TODO: Find way to make this work
   bool get isAdmin {
-    return true;
+    return _admin ?? false;
   }
 
   Future<bool> _login(String username, String password) async {
@@ -64,6 +62,7 @@ class AccountModel extends ChangeNotifier {
 
   Future<bool> login(String username, String password) async {
     if (await _login(username, password)) {
+      _admin = (await info).isAdmin;
       notifyListeners();
       return true;
     } else {
@@ -74,6 +73,7 @@ class AccountModel extends ChangeNotifier {
   void logout(BuildContext context) {
     context.go('/signout');
     _token = null;
+    _admin = null;
     notifyListeners();
   }
 
