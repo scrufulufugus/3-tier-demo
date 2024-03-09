@@ -1,6 +1,7 @@
 import argparse
 import random
 import os
+from .config import settings
 from .database import Database
 from .models import *
 
@@ -54,16 +55,12 @@ users = [
 ]
 
 def db_helper():
-    parser = argparse.ArgumentParser(description="Middleware DB init")
-    parser.add_argument("filename", type=argparse.FileType('w'), default="middleware.db", help="Filename to write to, defaults to middleware.db")
-    args = parser.parse_args()
-
     try:
-        os.remove(args.filename.name)
+        os.remove(settings.database)
     except FileNotFoundError:
         pass
 
-    with Database(args.filename.name) as db:
+    with Database(settings.database) as db:
         for user in users:
             db.append_user(User(**user))
         for product in products:

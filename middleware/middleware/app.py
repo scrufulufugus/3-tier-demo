@@ -1,6 +1,7 @@
 from typing import Annotated
 from fastapi import FastAPI, HTTPException, Depends
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from .config import settings
 from .database import Database
 from .models import *
 
@@ -8,7 +9,7 @@ app = FastAPI()
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token", auto_error=False)
 
-db = Database("middleware.db")
+db = Database(settings.database)
 
 # TODO: Make this work will colons in username or password
 def token_to_user(token: str) -> User|None:
