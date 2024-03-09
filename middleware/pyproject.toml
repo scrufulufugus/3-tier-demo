@@ -8,7 +8,7 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.11"
-fastapi = {extras = ["all"], version = "^0.110.0"}
+fastapi = "^0.109.2"
 uvicorn = "^0.27.1"
 python-multipart = "^0.0.9"
 sqlitedict = "^2.1.0"
