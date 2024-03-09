@@ -1,52 +1,36 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:frontend/models/catalog.dart';
 
-class SearchBarApp extends StatefulWidget {
-  const SearchBarApp({super.key});
-
-  @override
-  State<SearchBarApp> createState() => _SearchBarAppState();
-}
-
-class _SearchBarAppState extends State<SearchBarApp> {
-  bool isDark = false;
+class SearchAppBar extends StatelessWidget implements PreferredSizeWidget {
+  const SearchAppBar({super.key, required this.searchCallback, this.addCallback});
+  final Function(String value) searchCallback;
+  final Function()? addCallback;
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: SearchAnchor(
-          builder: (BuildContext context, SearchController controller) {
-        return SearchBar(
-          controller: controller,
-          padding: const MaterialStatePropertyAll<EdgeInsets>(
-              EdgeInsets.symmetric(horizontal: 16.0)),
-          onTap: () {
-            controller.openView();
-          },
-          onChanged: (_) {
-            controller.openView();
-          },
-          onSubmitted: (entry) {
-            Provider.of<CatalogModel>(context, listen: false).filter(entry);
-          },
-          leading: const Icon(Icons.search),
-        );
-      }, suggestionsBuilder:
-              (BuildContext context, SearchController controller) {
-        return List<ListTile>.generate(5, (int index) {
-          final String item = 'item $index';
-          return ListTile(
-            title: Text(item),
-            onTap: () {
-              setState(() {
-                controller.closeView(item);
-              });
-            },
-          );
-        });
-      }),
+    return AppBar(
+      backgroundColor: Theme.of(context).primaryColor,
+      automaticallyImplyLeading: false,
+      title: Container(
+        width: double.infinity,
+        height: 40,
+        color: Colors.white,
+        child: Center(
+          child: TextField(
+            onChanged: (value) => searchCallback(value),
+            decoration: InputDecoration(
+              hintText: 'Search...',
+              prefixIcon: const Icon(Icons.search),
+              suffixIcon: addCallback != null ? IconButton(
+                icon: const Icon(Icons.add),
+                onPressed: addCallback as void Function(),
+              ) : null,
+            ),
+          ),
+        ),
+      ),
     );
   }
+
+  @override
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 }

@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:frontend/models/catalog.dart';
 import 'package:frontend/widgets/header.dart';
 import 'package:frontend/widgets/catalog.dart';
+import 'package:frontend/widgets/search.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -46,31 +47,24 @@ class HomePageState extends State<HomePage> {
     // of paper on which the UI appears.
     return Material(
       child: Scaffold(
-        appBar: const Header(),
-        body: Column(
-          children: [
-            const SizedBox(
-              height: 20,
+        body: CustomScrollView(
+          slivers: [
+            SliverHeader(
+              bottom: SearchAppBar(
+                searchCallback: _runFilter,
+              ),
             ),
-            TextField(
-              onChanged: (value) => _runFilter(value),
-              decoration: const InputDecoration(
-                  labelText: 'Search', suffixIcon: Icon(Icons.search)),
-            ),
-            const SizedBox(
-              height: 20,
-            ),
-            Expanded(
-              child: filterItems?.isNotEmpty ?? true
-                  ? Consumer<CatalogModel>(
-                      builder: (context, catalog, child) =>
-                          ProductGrid(catalog: filterItems ?? catalog.products),
-                    )
-                  : const Text(
+            filterItems?.isNotEmpty ?? true
+                ? Consumer<CatalogModel>(
+                    builder: (context, catalog, child) =>
+                        ProductGrid(catalog: filterItems ?? catalog.products),
+                  )
+                : const SliverToBoxAdapter(
+                    child: Text(
                       'No results found',
                       style: TextStyle(fontSize: 24),
                     ),
-            ),
+                  ),
           ],
         ),
       ),

@@ -11,9 +11,8 @@ class ProductGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GridView.builder(
+    return SliverGrid.builder(
       itemCount: catalog.length,
-      padding: const EdgeInsets.all(8.0),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 3,
         childAspectRatio: 1,
@@ -69,9 +68,8 @@ class ProductList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView.separated(
+    return SliverList.separated(
       itemCount: catalog.length,
-      padding: const EdgeInsets.all(8.0),
       separatorBuilder: (BuildContext context, int index) => const Divider(),
       itemBuilder: (BuildContext context, int index) {
         return FutureBuilder<Product>(
@@ -117,11 +115,12 @@ class CartList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
+    return ListView.separated(
       scrollDirection: Axis.vertical,
       shrinkWrap: true, // Fixes unbloud size error
       itemCount: catalog.length,
       padding: const EdgeInsets.all(8.0),
+      separatorBuilder: (BuildContext context, int index) => const Divider(),
       itemBuilder: (BuildContext context, int index) {
         return FutureBuilder<Product>(
           future: catalog[index],
