@@ -211,7 +211,11 @@ async def get_product(user: Annotated[User|None, Depends(get_current_user)], id:
 
 # POST /products/{id}
 @app.post("/product/{id}")
-async def update_product(id: int, product: ProductBase) -> Product:
+async def update_product(user: Annotated[User|None, Depends(get_current_user)], id: int, product: ProductBase) -> Product:
+    if not user:
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+    if not user.isAdmin:
+        raise HTTPException(status_code=403, detail="Invalid credentials")
     for p in products:
         if p["id"] == id:
             p["title"] = product.title
@@ -224,7 +228,11 @@ async def update_product(id: int, product: ProductBase) -> Product:
 
 # DELETE /products/{id}
 @app.delete("/product/{id}")
-async def delete_product(id: int):
+async def delete_product(user: Annotated[User|None, Depends(get_current_user)], id: int):
+    if not user:
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+    if not user.isAdmin:
+        raise HTTPException(status_code=403, detail="Invalid credentials")
     for index, product in enumerate(products):
         if product["id"] == id:
             products.pop(index)
