@@ -45,12 +45,15 @@ class OptionalUser(User):
     address: str | None = None
     isAdmin: SkipJsonSchema[None] = None
 
-class PurchaseRecord(BaseModel):
-    id: int
+class BaseRecord(BaseModel):
     success: bool
     fail_at: int | None = None
     products: list[int]
     message: str
+    total: float
+
+class PurchaseRecord(BaseRecord):
+    id: int
 
 # TODO: Replace with database
 
@@ -106,6 +109,8 @@ users = [
     }
 ]
 
+records = []
+
 def get_user(username):
     for user in users:
         if user['username'] == username:
@@ -142,6 +147,12 @@ def append_product(product: ProductBase):
     product_dict["id"] = products[-1]["id"]+1
     products.append(product_dict)
     return Product(**product_dict)
+
+def append_record(record: BaseRecord):
+    record_dict = dict(record)
+    record_dict["id"] = len(records)+1
+    records.append(record_dict)
+    return PurchaseRecord(**record_dict)
 
 @app.get("/")
 async def root(user: Annotated[User|None, Depends(get_current_user)]):
@@ -256,31 +267,34 @@ async def update_users_me(user: Annotated[User|None, Depends(get_current_user)],
 
 # POST /purchase
 @app.post("/purchase")
-async def purchase(user: Annotated[User|None, Depends(get_current_user)], product_ids: list[int]) -> PurchaseRecord:
+async def purchase(user: Annotated[User|None, Depends(get_current_user)], product_ids: list[int]) -> BaseRecord:
     if not user:
         raise HTTPException(status_code=401, detail="Invalid credentials")
-    if not product_ids:
+    if not product_ids or len(product_ids) == 0:
         raise HTTPException(status_code=400, detail="No products in cart")
 
-    # FIXME: Track stock changes
     total = 0
+    to_buy = {}
     for id in product_ids:
         product = get_product_by_id(id)
         if not product:
-            return PurchaseRecord(
-                id = 1,
+            return BaseRecord(
                 fail_at = id,
                 success = False,
                 products = product_ids,
-                message = "Transaction failed: Product not found"
+                message = "Transaction failed: Product not found",
+                total = 0
             )
-        if product["stock"] == 0:
-            return PurchaseRecord(
-                id = 1,
+        if not to_buy.get(id):
+            to_buy[id] = product
+        to_buy[id]["stock"] -= 1
+        if to_buy[id]["stock"] < 0:
+            return BaseRecord(
                 fail_at = id,
                 success = False,
                 products = product_ids,
-                message = "Transaction failed: Product out of stock"
+                message = "Transaction failed: Product low on stock",
+                total = 0
             )
         total += product["price"]
 
@@ -290,9 +304,10 @@ async def purchase(user: Annotated[User|None, Depends(get_current_user)], produc
                 product["stock"] -= 1
                 continue
 
-    return PurchaseRecord(
-        id = 1,
+    result = BaseRecord(
         success = True,
         products = product_ids,
-        message = f"Transaction successful. Total: ${round(total,2)}"
+        message = f"Transaction successful. Total: ${round(total,2)}",
+        total = total
     )
+    return append_record(result)

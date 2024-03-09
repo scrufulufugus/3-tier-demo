@@ -68,27 +68,27 @@ class CartModel extends Catalog {
 }
 
 class PurchaseRecord {
-  final int id;
   final bool success;
   final int? failProd;
   final List<int> products;
   final String message;
+  final double total;
 
   const PurchaseRecord({
-      required this.id,
       required this.success,
       this.failProd,
       required this.products,
-      required this.message
+      required this.message,
+      required this.total
   });
 
   factory PurchaseRecord.fromJson(Map<String, dynamic> json) {
     return PurchaseRecord(
-      id: json['id'] as int,
       success: json['success'] as bool,
       failProd: json['fail_at'] as int?,
       products: (json['products'] as List).map((e) => e as int).toList(),
-      message: json['message'] as String
+      message: json['message'] as String,
+      total: json['total'] as double
     );
   }
 }
