@@ -15,6 +15,7 @@ sqlitedict = "^2.1.0"
 
 [tool.poetry.scripts]
 middleware = "middleware:main"
+db_helper = "middleware.database_helper:db_helper"
 
 [build-system]
 requires = ["poetry-core"]

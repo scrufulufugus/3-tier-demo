@@ -1,21 +1,23 @@
 from typing import Annotated
 from fastapi import FastAPI, HTTPException, Depends
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from .database import Database
 from .models import *
-from .database import *
 
 app = FastAPI()
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token", auto_error=False)
 
+db = Database("middleware.db")
 
+# TODO: Make this work will colons in username or password
 def token_to_user(token: str) -> User|None:
     split = token.split(':')
     if len(split) != 2:
       return None
-    user_dict = get_user(split[0])
-    if user_dict is not None and user_dict["password"] == split[1]:
-        return User(**user_dict)
+    user = db.get_user_by_name(split[0])
+    if user is not None and user.password == split[1]:
+        return user
     return None
 
 
@@ -38,10 +40,9 @@ async def root(user: Annotated[User|None, Depends(get_current_user)]):
 # Return a token for a given (user, pass)
 @app.post("/token")
 async def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]):
-    user_dict = get_user(form_data.username)
-    if not user_dict:
+    user = db.get_user_by_name(form_data.username)
+    if not user:
         raise HTTPException(status_code=401, detail="Invalid credentials")
-    user = User(**user_dict)
     if not form_data.password == user.password:
         raise HTTPException(status_code=401, detail="Invalid credentials")
 
@@ -52,10 +53,10 @@ async def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]):
 @app.get("/products")
 async def get_products(user: Annotated[User|None, Depends(get_current_user)]) -> list[int]:
     if user and user.isAdmin:
-        return [x['id'] for x in products]
+        return list(db.products.keys())
 
     # Return only products with stock
-    return [x['id'] for x in products if x['stock'] > 0]
+    return [k for k, v in db.products.items() if v["stock"] > 0]
 
 
 # POST /products
@@ -65,12 +66,12 @@ async def create_product(user: Annotated[User|None, Depends(get_current_user)], 
         raise HTTPException(status_code=401, detail="Invalid credentials")
     if not user.isAdmin:
         raise HTTPException(status_code=403, detail="Invalid credentials")
-    return append_product(product)
+    return db.append_product(product)
 
 # GET /products/{id}
 @app.get("/product/{id}")
 async def get_product(user: Annotated[User|None, Depends(get_current_user)], id: int) -> Product:
-    product = get_product_by_id(id)
+    product = db.products.get(id)
     if product:
         _prod = Product(**product)
         if not user or not user.isAdmin:
@@ -90,14 +91,8 @@ async def update_product(user: Annotated[User|None, Depends(get_current_user)], 
         raise HTTPException(status_code=401, detail="Invalid credentials")
     if not user.isAdmin:
         raise HTTPException(status_code=403, detail="Invalid credentials")
-    for p in products:
-        if p["id"] == id:
-            p["title"] = product.title
-            p["description"] = product.description
-            p["price"] = product.price
-            p["stock"] = product.stock
-            p["image"] = product.image
-            return Product(**p)
+    if db.products.get(id):
+        return db.update_product(Product(id=id, **dict(product)))
     raise HTTPException(status_code=404, detail="Product not found")
 
 # DELETE /products/{id}
@@ -107,11 +102,10 @@ async def delete_product(user: Annotated[User|None, Depends(get_current_user)], 
         raise HTTPException(status_code=401, detail="Invalid credentials")
     if not user.isAdmin:
         raise HTTPException(status_code=403, detail="Invalid credentials")
-    for index, product in enumerate(products):
-        if product["id"] == id:
-            products.pop(index)
-            return {"Data": "Deleted"}
-    raise HTTPException(status_code=404, detail="Product not found")
+    try:
+        db.products.pop(id)
+    except KeyError:
+        raise HTTPException(status_code=404, detail="Product not found")
 
 # GET /user/{id} (optional)
 
@@ -122,13 +116,10 @@ async def update_user(id: int, user: Annotated[User|None, Depends(get_current_us
         raise HTTPException(status_code=401, detail="Invalid credentials")
     if user.id != id and not user.isAdmin:
         raise HTTPException(status_code=403, detail="Invalid credentials")
-    for u in users:
-        if u["id"] == id:
-            for key, value in changes.model_dump().items():
-                if value:
-                    u[key] = value
-            return BaseUser(**u)
-    raise HTTPException(status_code=404, detail="User not found")
+    try:
+        return db.update_user(id, changes)
+    except KeyError:
+        raise HTTPException(status_code=404, detail="User not found")
 
 # POST /user/{id} (optional)
 # DELETE /user/{id} (optional)
@@ -158,7 +149,7 @@ async def purchase(user: Annotated[User|None, Depends(get_current_user)], produc
     total = 0
     to_buy = {}
     for id in product_ids:
-        product = get_product_by_id(id)
+        product = db.products.get(id)
         if not product:
             return BaseRecord(
                 fail_at = id,
@@ -181,10 +172,7 @@ async def purchase(user: Annotated[User|None, Depends(get_current_user)], produc
         total += product["price"]
 
     for id in product_ids:
-        for product in products:
-            if product["id"] == id:
-                product["stock"] -= 1
-                continue
+        db.buy_product(id)
 
     result = BaseRecord(
         success = True,
@@ -192,4 +180,4 @@ async def purchase(user: Annotated[User|None, Depends(get_current_user)], produc
         message = f"Transaction successful. Total: ${round(total,2)}",
         total = total
     )
-    return append_record(result)
+    return db.append_record(result)
