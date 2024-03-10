@@ -36,6 +36,11 @@ abstract class Catalog extends ChangeNotifier {
   @protected
   final Map<int, Future<Product>> prodCache_ = {};
 
+  @protected
+  void dropCache_() => prodCache_.clear();
+  @protected
+  void dropCacheItem_(int id) => prodCache_.remove(id);
+
   Future<Product> get(int id) => prodCache_.putIfAbsent(id, () => fetchProduct_(id));
   CatalogList get products => CatalogList.fromIds(productIds_, this);
   Future<Product> operator [](int index) => get(productIds_[index]);
@@ -99,12 +104,22 @@ class CatalogModel extends Catalog {
 
   void updateList() async {
     List<int> newIds = await fetchProductIds_();
-    prodCache_.clear();
+    dropCache_();
     if (const DeepCollectionEquality.unordered().equals(productIds_, newIds)) {
       //notifyListeners(); // Maybe?
       return;
     }
     productIds_..clear()..addAll(newIds);
+    notifyListeners();
+  }
+
+  void dropCache() {
+    dropCache_();
+    notifyListeners();
+  }
+
+  void dropCacheItem(int id) {
+    dropCacheItem_(id);
     notifyListeners();
   }
 
@@ -131,7 +146,8 @@ class CatalogModel extends Catalog {
 
     if (response.statusCode == 200) {
       updateList();
-      return jsonDecode(response.body)['id'] as int;
+      Product result = Product.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
+      return result.id;
     } else {
       throw Exception('Failed to add product');
     }
@@ -151,7 +167,7 @@ class CatalogModel extends Catalog {
     );
 
     if (response.statusCode == 200) {
-      updateList();
+      dropCacheItem(id);
     } else {
       throw Exception('Failed to update product');
     }
