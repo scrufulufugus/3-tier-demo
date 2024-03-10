@@ -74,7 +74,7 @@ class AdminPageState extends State<AdminPage> {
                         }
                         return Consumer<CatalogModel>(
                           builder: (context, catalog, child) =>
-                              ProductList(catalog: catalog.products),
+                              ProductList(catalog: filterItems ?? catalog.products),
                         );
                       },
                     )
