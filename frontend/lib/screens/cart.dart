@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/models/catalog.dart';
 import 'package:provider/provider.dart';
 import 'package:frontend/models/cart.dart';
 import 'package:frontend/models/account.dart';
+import 'package:frontend/models/product.dart';
 import 'package:frontend/widgets/catalog.dart';
 import 'package:frontend/widgets/header.dart';
 
@@ -24,12 +26,13 @@ class CartPage extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  FutureBuilder<double>(
+                  FutureBuilder<int>(
                       future: cart.price,
                       builder: (context, snapshot) {
                         if (snapshot.hasData) {
+                          int price = snapshot.data!;
                           return Text(
-                              'Total: \$${snapshot.data!.toStringAsFixed(2)}');
+                              'Total: ${currencyFormater.format(price * .01)}');
                         } else {
                           return const CircularProgressIndicator();
                         }
@@ -59,6 +62,7 @@ class CartPage extends StatelessWidget {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(content: Text(message)),
                           );
+                          Provider.of<CatalogModel>(context, listen: false).updateList();
                         }
                       } : null,
                       child: const Text('BUY'),

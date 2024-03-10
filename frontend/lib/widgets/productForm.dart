@@ -65,7 +65,7 @@ class _ProductFormState extends State<ProductForm> {
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
               child: TextFormField(
                 controller: priceController
-                  ..text = _currencyFormat.formatDouble(widget.product?.price ?? 0),
+                  ..text =  _currencyFormat.format(((widget.product?.price ?? 0) * 0.01).toStringAsFixed(2)),
                 keyboardType: TextInputType.number,
                 inputFormatters: <TextInputFormatter>[_currencyFormat],
                 decoration: const InputDecoration(
@@ -74,8 +74,8 @@ class _ProductFormState extends State<ProductForm> {
                   if (value == null || value.isEmpty) {
                     return 'Please enter the price';
                   }
-                  if (_currencyFormat.getUnformattedValue() < 0.01) {
-                    return 'Please enter a price greater than \$0.01';
+                  if ((_currencyFormat.getUnformattedValue() * 100).toInt() < 1) {
+                    return 'Please enter a price greater than ${currencyFormater.format(0.01)}';
                   }
                   return null;
                 },
@@ -132,7 +132,7 @@ class _ProductFormState extends State<ProductForm> {
                         ProductBase(
                           title: nameController.text.trim(),
                           description: descriptionController.text.trim(),
-                          price: _currencyFormat.getUnformattedValue().toDouble(),
+                          price: (_currencyFormat.getUnformattedValue() * 100).toInt(),
                           stock: int.parse(stockController.text.trim()),
                           imageUrl: imageController.text.trim(),
                         ),

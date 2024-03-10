@@ -10,7 +10,7 @@ def product_generator(n):
         yield {
             "title": f"Item {index}",
             "description": f"Description of item {index}",
-            "price": round(index * random.random() * 10,2),
+            "price": index * random.randrange(1,100) * 100 + random.choice([0, 50, 99, 69]),
             "stock": index * random.randrange(1,100),
             "image": 'https://via.placeholder.com/150'
         }
@@ -20,7 +20,7 @@ products = list(product_generator(40))
 products.append({
     "title": "None",
     "description": "Out of stock item",
-    "price": 100.00,
+    "price": 10000,
     "stock": 0,
     "image": 'https://via.placeholder.com/150'
 })
@@ -28,7 +28,7 @@ products.append({
 products.append({
     "title": "One",
     "description": "One in stock item",
-    "price": 100.00,
+    "price": 10000,
     "stock": 1,
     "image": 'https://via.placeholder.com/150'
 })

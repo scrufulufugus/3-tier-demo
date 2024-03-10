@@ -4,7 +4,7 @@ from pydantic.json_schema import SkipJsonSchema
 class BaseProduct(BaseModel):
     title: str
     description: str
-    price: float
+    price: int
     stock: int
     image: str
 
@@ -14,7 +14,7 @@ class Product(BaseProduct):
 class ProductEdit(BaseModel):
     title: str | None = None
     description: str | None = None
-    price: float | None = None
+    price: int | None = None
     stock: int | None = None
     image: str | None = None
 
@@ -47,11 +47,11 @@ class BaseTransaction(BaseModel):
 
 class Transaction(BaseTransaction):
     trans_id: int
-    total: float
+    total: int
 
 class PurchaseRecord(BaseModel):
     success: bool
     fail_at: int | None = None
     products: list[int]
     message: str
-    total: float
+    total: int

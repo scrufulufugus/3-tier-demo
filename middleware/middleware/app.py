@@ -193,6 +193,6 @@ async def purchase(user: Annotated[User|None, Depends(get_current_user)], produc
     return PurchaseRecord(
         success = True,
         products = product_ids,
-        message = f"Transaction successful. Total: ${round(total,2)}",
+        message = f"Transaction successful. Total: ${total*0.01:.2f}",
         total = total
     )

@@ -1,11 +1,9 @@
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-import 'package:frontend/middleware.dart';
+import 'package:intl/intl.dart';
 
 class ProductBase {
   final String title;
   final String description;
-  final double price;
+  final int price;
   final int? stock;
   final String imageUrl;
 
@@ -51,7 +49,7 @@ class Product extends ProductBase {
         'prod_id': int id,
         'title': String title,
         'description': String description,
-        'price': double price,
+        'price': int price,
         'stock': int? stock,
         'image': String imageUrl
       } => Product(
@@ -66,3 +64,9 @@ class Product extends ProductBase {
     };
   }
 }
+
+NumberFormat currencyFormater = NumberFormat.currency(
+  locale: 'en_US',
+  symbol: '\$',
+  decimalDigits: 2,
+);

@@ -1,15 +1,12 @@
-import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:frontend/middleware.dart';
-import 'package:flutter/material.dart';
 import 'package:frontend/models/catalog.dart';
-import 'package:frontend/models/account.dart';
 
 class CartModel extends Catalog {
   /// The current total price of all items.
-  Future<double> get price async {
-    double price = 0;
+  Future<int> get price async {
+    int price = 0;
     for (var product in products) {
       price += (await product).price;
     }
@@ -72,7 +69,7 @@ class PurchaseRecord {
   final int? failProd;
   final List<int> products;
   final String message;
-  final double total;
+  final int total;
 
   const PurchaseRecord({
       required this.success,
@@ -88,7 +85,7 @@ class PurchaseRecord {
       failProd: json['fail_at'] as int?,
       products: (json['products'] as List).map((e) => e as int).toList(),
       message: json['message'] as String,
-      total: json['total'] as double
+      total: json['total'] as int
     );
   }
 }

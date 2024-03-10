@@ -25,17 +25,18 @@ class ProductGrid extends StatelessWidget {
           future: catalog[index],
             builder: (context, snapshot) {
               if (snapshot.hasData) {
+                Product product = snapshot.data!;
                 return Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Image.network(
-                      snapshot.data!.imageUrl,
+                      product.imageUrl,
                       fit: BoxFit.cover,
                       height: 100,
                     ),
-                    Text(snapshot.data!.title),
-                    Text(snapshot.data!.description),
-                    Text('\$${snapshot.data!.price}'),
+                    Text(product.title),
+                    Text(product.description),
+                    Text(currencyFormater.format(product.price * .01)),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: <Widget>[
@@ -43,7 +44,7 @@ class ProductGrid extends StatelessWidget {
                           child: const Text('ADD TO CART'),
                           onPressed: () {
                             Provider.of<CartModel>(context, listen: false)
-                                .add(snapshot.data!.id);
+                                .add(product.id);
                           },
                         ),
                       ],
@@ -76,18 +77,19 @@ class ProductList extends StatelessWidget {
           future: catalog[index],
           builder: (context, snapshot) {
             if (snapshot.hasData) {
+              Product product = snapshot.data!;
               return Row(
                 mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(snapshot.data!.title),
-                  Text(snapshot.data!.description),
-                  Text('\$${snapshot.data!.price}'),
-                  Text('Stock: ${snapshot.data!.stock}'),
+                  Text(product.title),
+                  Text(product.description),
+                  Text(currencyFormater.format(product.price * .01)),
+                  Text('Stock: ${product.stock}'),
                   TextButton(
                     child: const Text('EDIT'),
                     onPressed: () {
-                      context.push("/admin/edit/${snapshot.data!.id}");
+                      context.push("/admin/edit/${product.id}");
                     },
                   ),
                   TextButton(
@@ -126,12 +128,13 @@ class CartList extends StatelessWidget {
           future: catalog[index],
           builder: (context, snapshot) {
             if (snapshot.hasData) {
+              Product product = snapshot.data!;
               return Row(
                 mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(snapshot.data!.title),
-                  Text('\$${snapshot.data!.price}'),
+                  Text(product.title),
+                  Text(currencyFormater.format(product.price * .01)),
                   TextButton(
                     child: const Text('DELETE'),
                     onPressed: () {
