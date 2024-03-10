@@ -110,6 +110,15 @@ async def delete_product(user: Annotated[User|None, Depends(get_current_user)], 
     except KeyError:
         raise HTTPException(status_code=404, detail="Product not found")
 
+# POST /user
+@app.post("/user")
+async def create_user(user: Annotated[User|None, Depends(get_current_user)], new_user: BaseUser) -> UserNoPass:
+    if not user:
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+    if not user.isAdmin:
+        raise HTTPException(status_code=403, detail="Invalid credentials")
+    return db.append_user(new_user)
+
 # GET /user/{id} (optional)
 @app.get("/user/{user_id}")
 async def get_user(user_id: int, user: Annotated[User|None, Depends(get_current_user)]) -> UserNoPass:
@@ -133,9 +142,6 @@ async def update_user(user_id: int, user: Annotated[User|None, Depends(get_curre
         return db.update_user(user_id, changes)
     except KeyError:
         raise HTTPException(status_code=404, detail="User not found")
-
-# POST /user/{id} (optional)
-# DELETE /user/{id} (optional)
 
 # GET /user/me
 @app.get("/me")
