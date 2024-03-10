@@ -35,7 +35,6 @@ products.append({
 
 users = [
     {
-        "id": 1,
         "username": "tester",
         "email": "test@example.com",
         "password": "password123",
@@ -44,7 +43,6 @@ users = [
         "isAdmin": True
     },
     {
-        "id": 2,
         "username": "testee",
         "email": "testee@example.com",
         "password": "password321",
@@ -62,9 +60,9 @@ def db_helper():
 
     with Database(settings.database) as db:
         for user in users:
-            db.append_user(User(**user))
+            db.append_user(BaseUser(**user))
         for product in products:
-            db.append_product(ProductBase(**product))
+            db.append_product(BaseProduct(**product))
 
 if __name__ == '__main__':
     db_helper()

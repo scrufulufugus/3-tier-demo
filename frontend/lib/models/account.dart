@@ -127,7 +127,7 @@ class Account {
 
   factory Account.fromJson(Map<String, dynamic> json) {
     return Account(
-        id: json['id'],
+        id: json['user_id'],
         username: json['username'],
         email: json['email'],
         password: json['password'],
@@ -165,7 +165,7 @@ class AccountIn extends Account {
 
   factory AccountIn.fromJson(Map<String, dynamic> json) {
     return AccountIn(
-        id: json['id'],
+        id: json['user_id'],
         username: json['username'],
         email: json['email'],
         phone: json['phone'],

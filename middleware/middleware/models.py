@@ -1,42 +1,57 @@
 from pydantic import BaseModel
 from pydantic.json_schema import SkipJsonSchema
 
-class ProductBase(BaseModel):
+class BaseProduct(BaseModel):
     title: str
     description: str
     price: float
-    stock: int | None = None
+    stock: int
     image: str
 
-class Product(ProductBase):
-    id: int
+class Product(BaseProduct):
+    prod_id: int
 
-class BaseUser(BaseModel):
-    id: int
+class ProductEdit(BaseModel):
+    title: str | None = None
+    description: str | None = None
+    price: float | None = None
+    stock: int | None = None
+    image: str | None = None
+
+class BaseUserNoPass(BaseModel):
     username: str
     email: str
     phone: str
     address: str
     isAdmin: bool
 
-class User(BaseUser):
+class BaseUser(BaseUserNoPass):
     password: str
 
-class OptionalUser(User):
-    id: SkipJsonSchema[None] = None
-    username: SkipJsonSchema[None] = None
+class UserNoPass(BaseUserNoPass):
+    user_id: int
+
+class User(UserNoPass, BaseUser):
+  pass
+
+class UserEdit(BaseModel):
     email: str | None = None
     password: str | None = None
     phone: str | None = None
     address: str | None = None
-    isAdmin: SkipJsonSchema[None] = None
 
-class BaseRecord(BaseModel):
+class BaseTransaction(BaseModel):
+    user_id: int
+    prod_id: int
+    count: int = 1
+
+class Transaction(BaseTransaction):
+    trans_id: int
+    total: float
+
+class PurchaseRecord(BaseModel):
     success: bool
     fail_at: int | None = None
     products: list[int]
     message: str
     total: float
-
-class PurchaseRecord(BaseRecord):
-    id: int

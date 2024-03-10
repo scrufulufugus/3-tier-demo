@@ -48,7 +48,7 @@ class Product extends ProductBase {
   factory Product.fromJson(Map<String, dynamic> json) {
     return switch (json) {
       {
-        'id': int id,
+        'prod_id': int id,
         'title': String title,
         'description': String description,
         'price': double price,

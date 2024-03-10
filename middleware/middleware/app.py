@@ -2,7 +2,7 @@ from typing import Annotated
 from fastapi import FastAPI, HTTPException, Depends
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from .config import settings
-from .database import Database
+from .database import Database, TransactionError
 from .models import *
 
 app = FastAPI()
@@ -62,7 +62,7 @@ async def get_products(user: Annotated[User|None, Depends(get_current_user)]) ->
 
 # POST /products
 @app.post("/product")
-async def create_product(user: Annotated[User|None, Depends(get_current_user)], product: ProductBase) -> Product:
+async def create_product(user: Annotated[User|None, Depends(get_current_user)], product: BaseProduct) -> Product:
     if not user:
         raise HTTPException(status_code=401, detail="Invalid credentials")
     if not user.isAdmin:
@@ -70,55 +70,67 @@ async def create_product(user: Annotated[User|None, Depends(get_current_user)], 
     return db.append_product(product)
 
 # GET /products/{id}
-@app.get("/product/{id}")
-async def get_product(user: Annotated[User|None, Depends(get_current_user)], id: int) -> Product:
-    product = db.products.get(id)
+@app.get("/product/{prod_id}")
+async def get_product(user: Annotated[User|None, Depends(get_current_user)], prod_id: int) -> Product:
+    product = db.products.get(prod_id)
     if product:
-        _prod = Product(**product)
+        _prod = Product(**product, prod_id=prod_id)
         if not user or not user.isAdmin:
             if product["stock"] > 0:
                 # Hide stock if not authenticated
-                _prod.stock = None
+                _prod.stock = 0
             else:
                 # Don't show out of stock items to non-admins
                 raise HTTPException(status_code=404, detail="Product not found")
         return _prod
     raise HTTPException(status_code=404, detail="Product not found")
 
+# TODO: Make this a patch route
 # POST /products/{id}
-@app.post("/product/{id}")
-async def update_product(user: Annotated[User|None, Depends(get_current_user)], id: int, product: ProductBase) -> Product:
+@app.post("/product/{prod_id}")
+async def update_product(user: Annotated[User|None, Depends(get_current_user)], prod_id: int, product: BaseProduct) -> Product:
     if not user:
         raise HTTPException(status_code=401, detail="Invalid credentials")
     if not user.isAdmin:
         raise HTTPException(status_code=403, detail="Invalid credentials")
-    if db.products.get(id):
-        return db.update_product(Product(id=id, **dict(product)))
+    if db.products.get(prod_id):
+        edit = ProductEdit(**dict(product))
+        return db.update_product(prod_id, edit)
     raise HTTPException(status_code=404, detail="Product not found")
 
 # DELETE /products/{id}
-@app.delete("/product/{id}")
-async def delete_product(user: Annotated[User|None, Depends(get_current_user)], id: int):
+@app.delete("/product/{prod_id}")
+async def delete_product(user: Annotated[User|None, Depends(get_current_user)], prod_id: int):
     if not user:
         raise HTTPException(status_code=401, detail="Invalid credentials")
     if not user.isAdmin:
         raise HTTPException(status_code=403, detail="Invalid credentials")
     try:
-        db.products.pop(id)
+        db.products.pop(prod_id)
     except KeyError:
         raise HTTPException(status_code=404, detail="Product not found")
 
 # GET /user/{id} (optional)
-
-# PATCH /user/{id}
-@app.patch("/user/{id}")
-async def update_user(id: int, user: Annotated[User|None, Depends(get_current_user)], changes: OptionalUser) -> BaseUser:
+@app.get("/user/{user_id}")
+async def get_user(user_id: int, user: Annotated[User|None, Depends(get_current_user)]) -> UserNoPass:
     if not user:
         raise HTTPException(status_code=401, detail="Invalid credentials")
-    if user.id != id and not user.isAdmin:
+    if user.user_id != user_id and not user.isAdmin:
         raise HTTPException(status_code=403, detail="Invalid credentials")
     try:
-        return db.update_user(id, changes)
+        return User(**db.users[user_id], user_id=user_id)
+    except KeyError:
+        raise HTTPException(status_code=404, detail="User not found")
+
+# PATCH /user/{id}
+@app.patch("/user/{user_id}")
+async def update_user(user_id: int, user: Annotated[User|None, Depends(get_current_user)], changes: UserEdit) -> UserNoPass:
+    if not user:
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+    if user.user_id != user_id and not user.isAdmin:
+        raise HTTPException(status_code=403, detail="Invalid credentials")
+    try:
+        return db.update_user(user_id, changes)
     except KeyError:
         raise HTTPException(status_code=404, detail="User not found")
 
@@ -127,58 +139,60 @@ async def update_user(id: int, user: Annotated[User|None, Depends(get_current_us
 
 # GET /user/me
 @app.get("/me")
-async def read_users_me(user: Annotated[User|None, Depends(get_current_user)]) -> BaseUser:
+async def read_users_me(user: Annotated[User|None, Depends(get_current_user)]) -> UserNoPass:
     if not user:
         raise HTTPException(status_code=401, detail="Invalid credentials")
     return user
 
 # GET /user/me
 @app.patch("/me")
-async def update_users_me(user: Annotated[User|None, Depends(get_current_user)], changes: OptionalUser) -> BaseUser:
+async def update_users_me(user: Annotated[User|None, Depends(get_current_user)], changes: UserEdit) -> UserNoPass:
     if not user:
         raise HTTPException(status_code=401, detail="Invalid credentials")
-    return await update_user(user.id, user, changes)
+    return await update_user(user.user_id, user, changes)
 
 # POST /purchase
 @app.post("/purchase")
-async def purchase(user: Annotated[User|None, Depends(get_current_user)], product_ids: list[int]) -> BaseRecord:
+async def purchase(user: Annotated[User|None, Depends(get_current_user)], product_ids: list[int]) -> PurchaseRecord:
     if not user:
         raise HTTPException(status_code=401, detail="Invalid credentials")
     if not product_ids or len(product_ids) == 0:
         raise HTTPException(status_code=400, detail="No products in cart")
 
-    total = 0
     to_buy = {}
-    for id in product_ids:
-        product = db.products.get(id)
-        if not product:
-            return BaseRecord(
-                fail_at = id,
+    for prod_id in product_ids:
+        if not db.products.get(prod_id):
+            return PurchaseRecord(
+                fail_at = prod_id,
                 success = False,
                 products = product_ids,
-                message = "Transaction failed: Product not found",
+                message = "Transaction failed. Product not found",
                 total = 0
             )
-        if not to_buy.get(id):
-            to_buy[id] = product
-        to_buy[id]["stock"] -= 1
-        if to_buy[id]["stock"] < 0:
-            return BaseRecord(
-                fail_at = id,
+        if not to_buy.get(prod_id):
+            to_buy[prod_id] = 0
+        to_buy[prod_id] += 1
+
+    transactions: list[Transaction] = []
+    for prod_id, count in to_buy.items():
+        try:
+            trans = db.purchase(user.user_id, prod_id, count)
+            transactions.append(trans)
+        except TransactionError as e:
+            for trans in transactions:
+                db.revert_transaction(trans.trans_id)
+            return PurchaseRecord(
+                fail_at = prod_id,
                 success = False,
                 products = product_ids,
-                message = "Transaction failed: Product low on stock",
+                message = str(e),
                 total = 0
             )
-        total += product["price"]
 
-    for id in product_ids:
-        db.buy_product(id)
-
-    result = BaseRecord(
+    total = sum([trans.total for trans in transactions])
+    return PurchaseRecord(
         success = True,
         products = product_ids,
         message = f"Transaction successful. Total: ${round(total,2)}",
         total = total
     )
-    return db.append_record(result)
