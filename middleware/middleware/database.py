@@ -67,7 +67,7 @@ class Database:
     def update_user(self, user_id: int, edit: UserEdit) -> User:
         current_user = self.db['users'][user_id]
         for key, value in dict(edit).items():
-            if value:
+            if value is not None:
                 current_user[key] = value
         self.db['users'][user_id] = current_user
         return User(**current_user, user_id=user_id)
@@ -75,7 +75,7 @@ class Database:
     def update_product(self, prod_id: int, edit: ProductEdit) -> Product:
         current_product = self.db['products'][prod_id]
         for key, value in dict(edit).items():
-            if value:
+            if value is not None:
                 current_product[key] = value
         self.db['products'][prod_id] = current_product
         return Product(**current_product, prod_id=prod_id)
@@ -84,7 +84,7 @@ class Database:
         product = self.products[prod_id]
         if product["stock"] < count:
             raise TransactionError("Insufficient stock")
-        self.update_product(prod_id, ProductEdit(stock=product['stock']-count))
+        self.update_product(prod_id, ProductEdit(stock=(product['stock']-count)))
         trans = self.append_transaction(BaseTransaction(
             user_id=user_id,
             prod_id=prod_id,

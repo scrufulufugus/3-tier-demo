@@ -54,10 +54,10 @@ async def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]):
 @app.get("/products")
 async def get_products(user: Annotated[User|None, Depends(get_current_user)]) -> list[int]:
     if user and user.isAdmin:
-        return list(db.products.keys())
+        return sorted(map(int, db.products.keys()))
 
     # Return only products with stock
-    return [k for k, v in db.products.items() if v["stock"] > 0]
+    return sorted([int(k) for k, v in db.products.items() if v["stock"] > 0])
 
 
 # POST /products
@@ -169,7 +169,7 @@ async def purchase(user: Annotated[User|None, Depends(get_current_user)], produc
                 message = "Transaction failed. Product not found",
                 total = 0
             )
-        if not to_buy.get(prod_id):
+        if to_buy.get(prod_id) == None:
             to_buy[prod_id] = 0
         to_buy[prod_id] += 1
 
@@ -177,6 +177,7 @@ async def purchase(user: Annotated[User|None, Depends(get_current_user)], produc
     for prod_id, count in to_buy.items():
         try:
             trans = db.purchase(user.user_id, prod_id, count)
+            print("Transaction:", trans)
             transactions.append(trans)
         except TransactionError as e:
             for trans in transactions:
