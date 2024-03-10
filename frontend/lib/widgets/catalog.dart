@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:frontend/models/catalog.dart';
@@ -14,11 +13,11 @@ class ProductGrid extends StatelessWidget {
   Widget build(BuildContext context) {
     return SliverGrid.builder(
       itemCount: catalog.length,
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 3,
-        childAspectRatio: 1,
+      gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+        maxCrossAxisExtent: 500.0,
         mainAxisSpacing: 10.0,
         crossAxisSpacing: 10.0,
+        childAspectRatio: 1.0,
       ),
       itemBuilder: (BuildContext context, int index) {
         return Card(
@@ -29,15 +28,36 @@ class ProductGrid extends StatelessWidget {
                 Product product = snapshot.data!;
                 return Column(
                   mainAxisSize: MainAxisSize.min,
+                  //mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    Image.network(
-                      product.imageUrl,
-                      fit: BoxFit.cover,
-                      height: 100,
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.only(
+                            top: 8.0, left: 8.0, right: 8.0),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(8.0),
+                          child: Image.network(
+                            product.imageUrl,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      ),
                     ),
-                    Text(product.title),
-                    Text(product.description),
-                    Text(currencyFormater.format(product.price * .01)),
+                    Padding(
+                      padding: const EdgeInsets.only(
+                          top: 8.0, left: 8.0, right: 8.0),
+                      child: Text(product.title),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(
+                          top: 8.0, left: 8.0, right: 8.0),
+                      child: Text(product.description),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(
+                          top: 8.0, left: 8.0, right: 8.0),
+                      child: Text(currencyFormater.format(product.price * .01)),
+                    ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: <Widget>[
