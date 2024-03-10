@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:frontend/models/catalog.dart';
@@ -22,7 +23,7 @@ class ProductGrid extends StatelessWidget {
       itemBuilder: (BuildContext context, int index) {
         return Card(
           child: FutureBuilder<Product>(
-          future: catalog[index],
+            future: catalog[index],
             builder: (context, snapshot) {
               if (snapshot.hasData) {
                 Product product = snapshot.data!;
@@ -80,23 +81,43 @@ class ProductList extends StatelessWidget {
               Product product = snapshot.data!;
               return Row(
                 mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(product.title),
-                  Text(product.description),
-                  Text(currencyFormater.format(product.price * .01)),
-                  Text('Stock: ${product.stock}'),
-                  TextButton(
-                    child: const Text('EDIT'),
-                    onPressed: () {
-                      context.push("/admin/edit/${product.id}");
-                    },
+                  Expanded(
+                    flex: 4,
+                    child: Text(product.title),
                   ),
-                  TextButton(
-                    child: const Text('DELETE'),
-                    onPressed: () {
-                      catalog.removeAt(index);
-                    },
+                  Expanded(
+                    flex: 8,
+                    child: Text(product.description),
+                  ),
+                  Expanded(
+                    flex: 2,
+                    child: Text(currencyFormater.format(product.price * .01)),
+                  ),
+                  Expanded(
+                    flex: 2,
+                    child: Text('Stock: ${product.stock}'),
+                  ),
+                  Expanded(
+                    flex: 4,
+                    child: OverflowBar(
+                      alignment: MainAxisAlignment.end,
+                      overflowAlignment: OverflowBarAlignment.center,
+                      children: [
+                        TextButton(
+                          child: const Text('EDIT'),
+                          onPressed: () {
+                            context.push("/admin/edit/${product.id}");
+                          },
+                        ),
+                        TextButton(
+                          child: const Text('DELETE'),
+                          onPressed: () {
+                            catalog.removeAt(index);
+                          },
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               );
@@ -131,15 +152,28 @@ class CartList extends StatelessWidget {
               Product product = snapshot.data!;
               return Row(
                 mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(product.title),
-                  Text(currencyFormater.format(product.price * .01)),
-                  TextButton(
-                    child: const Text('DELETE'),
-                    onPressed: () {
-                      catalog.removeAt(index);
-                    },
+                  Expanded(
+                    flex: 10,
+                    child: Text(product.title),
+                  ),
+                  Expanded(
+                    flex: 10,
+                    child: Text(currencyFormater.format(product.price * .01)),
+                  ),
+                  Expanded(
+                    flex: 10,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        TextButton(
+                          child: const Text('REMOVE'),
+                          onPressed: () {
+                            catalog.removeAt(index);
+                          },
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               );
