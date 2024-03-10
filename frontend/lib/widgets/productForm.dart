@@ -112,6 +112,10 @@ class _ProductFormState extends State<ProductForm> {
                   if (value == null || value.isEmpty) {
                     return 'Please enter the image URL';
                   }
+                  bool isUri = Uri.tryParse(value)?.hasAbsolutePath ?? false;
+                  if (!isUri) {
+                    return 'Please enter a valid URI';
+                  }
                   return null;
                 },
               ),
@@ -126,11 +130,11 @@ class _ProductFormState extends State<ProductForm> {
                       widget.onSubmit(
                         context,
                         ProductBase(
-                          title: nameController.text,
-                          description: descriptionController.text,
+                          title: nameController.text.trim(),
+                          description: descriptionController.text.trim(),
                           price: _currencyFormat.getUnformattedValue().toDouble(),
-                          stock: int.parse(stockController.text),
-                          imageUrl: imageController.text,
+                          stock: int.parse(stockController.text.trim()),
+                          imageUrl: imageController.text.trim(),
                         ),
                       );
                     } else {

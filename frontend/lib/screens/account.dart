@@ -57,6 +57,10 @@ class _AccountState extends State<AccountPage> {
                             if (value == null || value.isEmpty) {
                               return null;
                             }
+                            RegExp emailRegex = RegExp(r"^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[a-zA-Z]{2,}$");
+                            if (!emailRegex.hasMatch(value)) {
+                              return 'Please enter a valid email';
+                            }
                             return null;
                           },
                         ),
@@ -85,6 +89,13 @@ class _AccountState extends State<AccountPage> {
                               border: OutlineInputBorder(),
                               labelText: "Phone Number"),
                           validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return null;
+                            }
+                            RegExp phoneRegex = RegExp(r"^(\+\d{2})?\d{10}$");
+                            if (!phoneRegex.hasMatch(value)) {
+                              return 'Please enter a valid phone number';
+                            }
                             return null;
                           },
                         ),
@@ -137,10 +148,10 @@ class _AccountState extends State<AccountPage> {
                                 // Submit to backend
                                 AccountOut update = AccountOut(
                                   id: snapshot.data!.id,
-                                  email: nullIfUnchanged(emailController.text, snapshot.data!.email),
+                                  email: nullIfUnchanged(emailController.text.trim(), snapshot.data!.email),
                                   password: nullIfUnchanged(passwordController.text, snapshot.data!.password),
-                                  phone: nullIfUnchanged(phoneController.text, snapshot.data!.phone),
-                                  address: nullIfUnchanged(addressController.text, snapshot.data!.address),
+                                  phone: nullIfUnchanged(phoneController.text.trim(), snapshot.data!.phone),
+                                  address: nullIfUnchanged(addressController.text.trim(), snapshot.data!.address),
                                 );
 
                                 // TODO: Make async call to update account
