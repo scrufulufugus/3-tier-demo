@@ -201,7 +201,33 @@ class CartList extends StatelessWidget {
                 ],
               );
             } else if (snapshot.hasError) {
-              return Text('${snapshot.error}');
+              return Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Expanded(
+                    flex: 10,
+                    child: Text('${snapshot.error}'),
+                  ),
+                  Expanded(
+                    flex: 10,
+                    child: Text(currencyFormater.format(0)),
+                  ),
+                  Expanded(
+                    flex: 10,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        TextButton(
+                          child: const Text('REMOVE'),
+                          onPressed: () {
+                            catalog.removeAt(index);
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              );
             }
             return const CircularProgressIndicator();
           },

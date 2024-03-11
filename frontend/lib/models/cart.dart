@@ -13,11 +13,8 @@ class CartModel extends Catalog {
     return price;
   }
 
-  /// Adds [item] to cart. This and [removeAll] are the only ways to modify the
-  /// cart from the outside.
   void add(int id) {
     productIds_.add(id);
-    // This call tells the widgets that are listening to this model to rebuild.
     notifyListeners();
   }
 

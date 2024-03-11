@@ -28,7 +28,16 @@ class EditPage extends StatelessWidget {
                   //   }
                   //   return value == original ? null : value;
                   // }
-                  catalog.update(productId, product);
+                  try {
+                    catalog.update(productId, product);
+                  } on Exception catch (e) {
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text(e.toString())),
+                      );
+                    }
+                    return;
+                  }
 
                   if (context.mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(

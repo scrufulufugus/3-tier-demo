@@ -15,7 +15,17 @@ class AddPage extends StatelessWidget {
       body: Consumer<CatalogModel>(
         builder: (context, catalog, child) => ProductForm(
           onSubmit: (context, product) async {
-            int newProduct = await catalog.add(product);
+            int newProduct;
+            try {
+              newProduct = await catalog.add(product);
+            } on Exception catch (e) {
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text(e.toString())),
+                );
+              }
+              return;
+            }
             if (context.mounted) {
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(content: Text('Added product')),

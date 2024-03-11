@@ -17,6 +17,7 @@ class _AccountState extends State<AccountPage> {
   TextEditingController phoneController = TextEditingController();
   TextEditingController addressController = TextEditingController();
   TextEditingController currentPasswordController = TextEditingController();
+  final ValueNotifier _isProcessingNotifier = ValueNotifier(false);
 
   @override
   Widget build(BuildContext context) {
@@ -141,40 +142,57 @@ class _AccountState extends State<AccountPage> {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 8, vertical: 16.0),
                         child: Center(
-                          child: ElevatedButton(
-                            onPressed: () async {
-                              if (_formKey.currentState!.validate()) {
-                                String? nullIfUnchanged(String? value, String? original) {
-                                  if (value == null || value.isEmpty) {
-                                    return null;
+                          child: ValueListenableBuilder(
+                            valueListenable: _isProcessingNotifier,
+                            builder: (context, isProcessing, child) {
+                              return ElevatedButton(
+                                onPressed: isProcessing ? null : () async {
+                                  _isProcessingNotifier.value = true;
+                                  if (_formKey.currentState!.validate()) {
+                                    String? nullIfUnchanged(String? value, String? original) {
+                                      if (value == null || value.isEmpty) {
+                                        return null;
+                                      }
+                                      return value == original ? null : value;
+                                    }
+
+                                    // Submit to backend
+                                    AccountOut update = AccountOut(
+                                      id: snapshot.data!.id,
+                                      email: nullIfUnchanged(emailController.text.trim(), snapshot.data!.email),
+                                      password: nullIfUnchanged(passwordController.text, snapshot.data!.password),
+                                      phone: nullIfUnchanged(phoneController.text.trim(), snapshot.data!.phone),
+                                      address: nullIfUnchanged(addressController.text.trim(), snapshot.data!.address),
+                                    );
+
+                                    String status;
+                                    try {
+                                      status = await account.update(update, currentPasswordController.text);
+                                    } on Exception catch (e) {
+                                      if (context.mounted) {
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          SnackBar(content: Text(e.toString())),
+                                        );
+                                      }
+                                      _isProcessingNotifier.value = false;
+                                      return;
+                                    }
+                                    if (context.mounted) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(content: Text(status)),
+                                      );
+                                    }
+                                  } else {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                          content: Text('Please fill input')),
+                                    );
                                   }
-                                  return value == original ? null : value;
-                                }
-
-                                // Submit to backend
-                                AccountOut update = AccountOut(
-                                  id: snapshot.data!.id,
-                                  email: nullIfUnchanged(emailController.text.trim(), snapshot.data!.email),
-                                  password: nullIfUnchanged(passwordController.text, snapshot.data!.password),
-                                  phone: nullIfUnchanged(phoneController.text.trim(), snapshot.data!.phone),
-                                  address: nullIfUnchanged(addressController.text.trim(), snapshot.data!.address),
-                                );
-
-                                // TODO: Make async call to update account
-                                String status = await account.update(update, currentPasswordController.text);
-                                if (context.mounted) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(content: Text(status)),
-                                  );
-                                }
-                              } else {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                      content: Text('Please fill input')),
-                                );
-                              }
+                                  _isProcessingNotifier.value = false;
+                                },
+                                child: const Text('Submit'),
+                              );
                             },
-                            child: const Text('Submit'),
                           ),
                         ),
                       ),
