@@ -42,6 +42,9 @@ class _ProductFormState extends State<ProductForm> {
                   if (value == null || value.isEmpty) {
                     return 'Please enter the product name';
                   }
+                  if (value.length > 40) {
+                    return 'Please enter a product name with less than 40 characters';
+                  }
                   return null;
                 },
               ),
@@ -56,6 +59,9 @@ class _ProductFormState extends State<ProductForm> {
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter the product description';
+                  }
+                  if (value.length > 200) {
+                    return 'Please enter a product description with less than 200 characters';
                   }
                   return null;
                 },
@@ -95,7 +101,7 @@ class _ProductFormState extends State<ProductForm> {
                     return 'Please enter the stock';
                   }
                   if (int.parse(value) < 0) {
-                    return 'Please enter a stock greater than 0';
+                    return 'Please enter a stock of at least 0';
                   }
                   return null;
                 },

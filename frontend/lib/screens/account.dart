@@ -75,6 +75,12 @@ class _AccountState extends State<AccountPage> {
                               border: OutlineInputBorder(),
                               labelText: "Password"),
                           validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return null;
+                            }
+                            if (value.length < 6 || value.length > 40) {
+                              return 'Password must be between 6 and 40 characters';
+                            }
                             return null;
                           },
                         ),
