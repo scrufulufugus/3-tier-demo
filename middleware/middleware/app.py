@@ -183,7 +183,6 @@ async def purchase(user: Annotated[User|None, Depends(get_current_user)], produc
     for prod_id, count in to_buy.items():
         try:
             trans = db.purchase(user.user_id, prod_id, count)
-            print("Transaction:", trans)
             transactions.append(trans)
         except TransactionError as e:
             for trans in transactions:

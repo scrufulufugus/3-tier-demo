@@ -14,6 +14,7 @@ python-multipart = "^0.0.9"
 sqlitedict = "^2.1.0"
 pydantic-settings = "^2.2.1"
 requests = "^2.31.0"
+email-validator = "^2.1.1"
 
 [tool.poetry.scripts]
 middleware = "middleware:main"
