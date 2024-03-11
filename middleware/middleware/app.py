@@ -11,13 +11,13 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token", auto_error=False)
 
 db = Database(settings.database)
 
-# TODO: Make this work will colons in username or password
 def token_to_user(token: str) -> User|None:
     split = token.split(':')
-    if len(split) != 2:
+    if len(split) < 2:
       return None
     user = db.get_user_by_name(split[0])
-    if user is not None and user.password == split[1]:
+    password = ':'.join(split[1:])
+    if user is not None and user.password == password:
         return user
     return None
 
