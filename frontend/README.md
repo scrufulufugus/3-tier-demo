@@ -1,7 +1,21 @@
 # ThreeTier Demo Application - Frontend
 
-## Getting Started
+## Running
+
+### Release
+
+``` sh
+flutter run -d linux --release
+```
+
+### Development
 
 ``` sh
 flutter run -d linux
+```
+
+## Building
+
+``` sh
+flutter build linux
 ```

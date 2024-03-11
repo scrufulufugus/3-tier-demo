@@ -1,8 +1,10 @@
 # ThreeTier Demo Application
 
-A simple shopping application build as a 3-tier architecture using Flutter, FastAPI, and SQLite.
+A simple shopping application built as a 3-tier architecture using Flutter, FastAPI, and SQLite.
 
 ## Building
+
+### The Proper Way
 
 This application uses nix to manage dependencies and building. If you do not already have nix installed with flakes enabled follow [this guide](https://zero-to-nix.com/start/install).
 
@@ -13,6 +15,10 @@ nix build
 ```
 
 The resulting build can then be found in `./result`.
+
+### Without Nix
+
+The individual components of this project can be built without nix if necessary. Ensure that [flutter](https://docs.flutter.dev/get-started/install) and [poetry](https://python-poetry.org/) are installed, then follow the build instructions in the README of each component.
 
 ## Running
 
