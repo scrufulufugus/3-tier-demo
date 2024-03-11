@@ -10,7 +10,7 @@ class AccountMenu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Consumer<AccountModel>(
-        builder: (context, account, child) => PopupMenuButton(
+      builder: (context, account, child) => PopupMenuButton(
         icon: const Icon(Icons.account_circle),
         tooltip: 'My Account',
         itemBuilder: (BuildContext context) {
@@ -51,8 +51,9 @@ class AccountMenu extends StatelessWidget {
               ),
             ];
           }
-        },),
-      );
+        },
+      ),
+    );
   }
 }
 
@@ -65,8 +66,7 @@ class Header extends StatelessWidget implements PreferredSizeWidget {
       backgroundColor: Theme.of(context).colorScheme.primary,
       title: TextButton(
         child: Text("Sumazon",
-          style: Theme.of(context).primaryTextTheme.titleLarge
-        ),
+            style: Theme.of(context).primaryTextTheme.titleLarge),
         onPressed: () {
           context.push('/');
         },
@@ -74,15 +74,18 @@ class Header extends StatelessWidget implements PreferredSizeWidget {
       actions: [
         const AccountMenu(),
         Consumer<CartModel>(
-            builder: (context, cart, child) => Badge.count(
-                count: cart.length,
-                child: IconButton(
-                    icon: const Icon(Icons.shopping_cart),
-                    tooltip: 'Cart',
-                    onPressed: () {
-                      context.push('/cart');
-                    },
-              ))),
+          builder: (context, cart, child) => Badge.count(
+            count: cart.length,
+            child: IconButton(
+              icon: const Icon(Icons.shopping_cart),
+              tooltip: 'Cart',
+              onPressed: () {
+                context.push('/cart');
+              },
+            ),
+          ),
+        ),
+        const SizedBox(width: 24),
       ],
     );
   }
@@ -104,8 +107,7 @@ class SliverHeader extends StatelessWidget implements PreferredSizeWidget {
       backgroundColor: Theme.of(context).colorScheme.primary,
       title: TextButton(
         child: Text("Sumazon",
-          style: Theme.of(context).primaryTextTheme.titleLarge
-        ),
+            style: Theme.of(context).primaryTextTheme.titleLarge),
         onPressed: () {
           context.push('/');
         },
@@ -114,15 +116,18 @@ class SliverHeader extends StatelessWidget implements PreferredSizeWidget {
       actions: [
         const AccountMenu(),
         Consumer<CartModel>(
-            builder: (context, cart, child) => Badge.count(
-                count: cart.length,
-                child: IconButton(
-                    icon: const Icon(Icons.shopping_cart),
-                    tooltip: 'Cart',
-                    onPressed: () {
-                      context.push('/cart');
-                    },
-              ))),
+          builder: (context, cart, child) => Badge.count(
+            count: cart.length,
+            child: IconButton(
+              icon: const Icon(Icons.shopping_cart),
+              tooltip: 'Cart',
+              onPressed: () {
+                context.push('/cart');
+              },
+            ),
+          ),
+        ),
+        const SizedBox(width: 24),
       ],
     );
   }

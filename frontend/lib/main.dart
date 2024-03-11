@@ -73,7 +73,10 @@ class MyApp extends StatelessWidget {
       child: MaterialApp.router(
           title: 'Sumazon',
           theme: ThemeData(
-            colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+            colorScheme: ColorScheme.fromSeed(
+              seedColor: Colors.deepPurple,
+              brightness: Brightness.light,
+            ),
             useMaterial3: true,
           ),
           routerConfig: _router,

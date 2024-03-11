@@ -13,12 +13,13 @@ class SearchAppBar extends StatelessWidget implements PreferredSizeWidget {
       title: Container(
         width: double.infinity,
         height: 40,
-        color: Colors.white,
+        color: Theme.of(context).secondaryHeaderColor,
         child: Center(
           child: TextField(
             onChanged: (value) => searchCallback(value),
             decoration: InputDecoration(
-              hintText: 'Search...',
+              contentPadding: const EdgeInsets.all(5),
+              hintText: 'Search',
               prefixIcon: const Icon(Icons.search),
               suffixIcon: addCallback != null ? IconButton(
                 icon: const Icon(Icons.add),

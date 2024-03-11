@@ -54,17 +54,20 @@ class HomePageState extends State<HomePage> {
                 searchCallback: _runFilter,
               ),
             ),
-            filterItems?.isNotEmpty ?? true
-                ? Consumer<CatalogModel>(
-                    builder: (context, catalog, child) =>
-                        ProductGrid(catalog: filterItems ?? catalog.products),
-                  )
-                : const SliverToBoxAdapter(
-                    child: Text(
-                      'No results found',
-                      style: TextStyle(fontSize: 24),
+            SliverPadding(
+              padding: const EdgeInsets.all(16),
+              sliver: filterItems?.isNotEmpty ?? true
+                  ? Consumer<CatalogModel>(
+                      builder: (context, catalog, child) =>
+                          ProductGrid(catalog: filterItems ?? catalog.products),
+                    )
+                  : const SliverToBoxAdapter(
+                      child: Text(
+                        'No results found',
+                        style: TextStyle(fontSize: 24),
+                      ),
                     ),
-                  ),
+            ),
           ],
         ),
       ),
