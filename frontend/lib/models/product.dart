@@ -27,7 +27,7 @@ class ProductBase {
 
   @override
   String toString() {
-    return "$title:$description:\$$price";
+    return "$title:$description:${currencyFormater.format(price * .01)}";
   }
 }
 
