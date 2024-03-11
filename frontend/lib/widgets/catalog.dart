@@ -65,11 +65,11 @@ class ProductGrid extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: <Widget>[
                         TextButton(
-                          child: const Text('ADD TO CART'),
-                          onPressed: () {
+                          onPressed: (product.stock ?? 1) < 1 ? null : () {
                             Provider.of<CartModel>(context, listen: false)
                                 .add(product.id);
                           },
+                          child: const Text('ADD TO CART'),
                         ),
                       ],
                     ),

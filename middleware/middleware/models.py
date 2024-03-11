@@ -24,6 +24,9 @@ class BaseProduct(BaseModel):
 class Product(BaseProduct):
     prod_id: PositiveInt
 
+class ProductNullableStock(Product):
+    stock: NonNegativeInt | None
+
 class ProductEdit(BaseModel):
     title: ProductName | None = None
     description: ProductDescription | None = None

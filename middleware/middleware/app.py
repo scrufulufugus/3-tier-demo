@@ -71,14 +71,14 @@ async def create_product(user: Annotated[User|None, Depends(get_current_user)], 
 
 # GET /products/{id}
 @app.get("/product/{prod_id}")
-async def get_product(user: Annotated[User|None, Depends(get_current_user)], prod_id: int) -> Product:
+async def get_product(user: Annotated[User|None, Depends(get_current_user)], prod_id: int) -> ProductNullableStock:
     product = db.products.get(prod_id)
     if product:
-        _prod = Product(**product, prod_id=prod_id)
+        _prod = ProductNullableStock(**product, prod_id=prod_id)
         if not user or not user.isAdmin:
             if product["stock"] > 0:
                 # Hide stock if not authenticated
-                _prod.stock = 0
+                _prod.stock = None
             else:
                 # Don't show out of stock items to non-admins
                 raise HTTPException(status_code=404, detail="Product not found")
