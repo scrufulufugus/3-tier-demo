@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:frontend/models/cart.dart';
 import 'package:frontend/models/account.dart';
+import 'package:frontend/models/catalog.dart';
 
 class AccountMenu extends StatelessWidget {
   const AccountMenu({super.key});
@@ -12,6 +13,7 @@ class AccountMenu extends StatelessWidget {
     return Consumer<AccountModel>(
       builder: (context, account, child) => PopupMenuButton(
         icon: const Icon(Icons.account_circle),
+        iconColor: Theme.of(context).colorScheme.onPrimary,
         tooltip: 'My Account',
         itemBuilder: (BuildContext context) {
           if (account.isAuthenticated) {
@@ -71,6 +73,14 @@ class Header extends StatelessWidget implements PreferredSizeWidget {
           context.push('/');
         },
       ),
+      leading: IconButton(
+        icon: const Icon(Icons.refresh),
+        color: Theme.of(context).colorScheme.onPrimary,
+        tooltip: 'Refresh',
+        onPressed: () {
+          Provider.of<CatalogModel>(context, listen: false).forceRefresh();
+        },
+      ),
       actions: [
         const AccountMenu(),
         Consumer<CartModel>(
@@ -78,6 +88,7 @@ class Header extends StatelessWidget implements PreferredSizeWidget {
             count: cart.length,
             child: IconButton(
               icon: const Icon(Icons.shopping_cart),
+              color: Theme.of(context).colorScheme.onPrimary,
               tooltip: 'Cart',
               onPressed: () {
                 context.push('/cart');
@@ -112,6 +123,14 @@ class SliverHeader extends StatelessWidget implements PreferredSizeWidget {
           context.push('/');
         },
       ),
+      leading: IconButton(
+        icon: const Icon(Icons.refresh),
+        color: Theme.of(context).colorScheme.onPrimary,
+        tooltip: 'Refresh',
+        onPressed: () {
+          Provider.of<CatalogModel>(context, listen: false).forceRefresh();
+        },
+      ),
       bottom: bottom,
       actions: [
         const AccountMenu(),
@@ -120,6 +139,7 @@ class SliverHeader extends StatelessWidget implements PreferredSizeWidget {
             count: cart.length,
             child: IconButton(
               icon: const Icon(Icons.shopping_cart),
+              color: Theme.of(context).colorScheme.onPrimary,
               tooltip: 'Cart',
               onPressed: () {
                 context.push('/cart');

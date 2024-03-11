@@ -102,6 +102,13 @@ class CatalogModel extends Catalog {
     updateList();
   }
 
+  void forceRefresh() async {
+    List<int> newIds = await fetchProductIds_();
+    dropCache_();
+    productIds_..clear()..addAll(newIds);
+    notifyListeners();
+  }
+
   void updateList() async {
     List<int> newIds = await fetchProductIds_();
     dropCache_();
